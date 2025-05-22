@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Que Coman Pasteles! - El Juego de la Revolución Francesa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Crete+Round&display=swap'); /* For a more historical/gamey feel */
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #2c3e50; /* Dark blue-grey, reminiscent of historical times */
+            color: #ecf0f1; /* Light text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars */
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .game-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background-color: #34495e; /* Slightly lighter dark background for container */
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 0 6px 6px rgba(0, 0, 0, 0.2);
+            max-width: 95vw;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 768px) {
+            .game-wrapper {
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                max-width: 1000px; /* Max width for larger screens */
+            }
+        }
+
+        h1 {
+            font-family: 'Crete Round', serif;
+            font-size: 2.5rem;
+            color: #f1c40f; /* Gold-like color */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        canvas {
+            background-color: #000; /* Game board background */
+            border: 4px solid #95a5a6; /* Silver border */
+            border-radius: 0.5rem;
+            display: block;
+            touch-action: none; /* Disable default touch actions like scrolling */
+            width: 100%; /* Make canvas fluid */
+            max-width: 600px; /* Max width for game canvas */
+            height: 400px; /* Fixed height for game canvas */
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 768px) {
+            canvas {
+                height: 600px; /* Taller on larger screens */
+            }
+        }
+
+        .game-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-width: 150px;
+            padding: 1rem;
+            background-color: #2c3e50;
+            border-radius: 0.5rem;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-panel {
+            background-color: #34495e;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.125rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .score-icon {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .control-button {
+            background-color: #e74c3c; /* Red button for action */
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: none;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .control-button:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .control-button:active {
+            background-color: #a52a22;
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .control-button.move {
+            background-color: #3498db; /* Blue for movement */
+        }
+        .control-button.move:hover {
+            background-color: #2980b9;
+        }
+        .control-button.move:active {
+            background-color: #21618c;
+        }
+
+        /* Modal for questions */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background-color: #34495e;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            color: #ecf0f1;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .modal-content h2 {
+            font-family: 'Crete Round', serif;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #f1c40f;
+        }
+
+        .modal-content p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-options button {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            background-color: #2ecc71; /* Green for options */
+            color: #fff;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-options button:hover {
+            background-color: #27ae60;
+        }
+        .modal-options button.incorrect {
+            background-color: #e74c3c; /* Red for incorrect */
+        }
+        .modal-options button.correct {
+            background-color: #27ae60; /* Green for correct */
+        }
+
+        .modal-feedback {
+            margin-top: 1rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .modal-feedback.correct {
+            color: #2ecc71;
+        }
+        .modal-feedback.incorrect {
+            color: #e74c3c;
+        }
+
+        .modal-continue-button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: background-color 0.2s ease-in-out;
+            border: none;
+            outline: none;
+        }
+        .modal-continue-button:hover {
+            background-color: #2980b9;
+        }
+
+        .game-over-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 1.5rem;
+            z-index: 1000;
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .game-over-text {
+            font-family: 'Crete Round', serif;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #e74c3c; /* Red for game over */
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+        }
+
+        .final-score {
+            font-size: 1.8rem;
+            color: #f1c40f;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        .restart-button {
+            background-color: #2ecc71; /* Green button */
+            color: #fff;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: none;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .restart-button:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        .restart-button:active {
+            background-color: #218c57;
+            transform: translateY(0);
+            box-shadow: none;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Firebase variables (will be initialized in initGame)
+        window.firebaseApp = null;
+        window.db = null;
+        window.auth = null;
+        window.userId = null;
+
+        // Function to initialize Firebase and authenticate
+        window.initFirebase = async () => {
+            try {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+
+                if (Object.keys(firebaseConfig).length === 0) {
+                    console.error("Firebase config is missing. High score will not be saved.");
+                    return;
+                }
+
+                window.firebaseApp = initializeApp(firebaseConfig);
+                window.db = getFirestore(window.firebaseApp);
+                window.auth = getAuth(window.firebaseApp);
+
+                // Sign in anonymously or with custom token
+                if (typeof __initial_auth_token !== 'undefined') {
+                    await signInWithCustomToken(window.auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(window.auth);
+                }
+
+                onAuthStateChanged(window.auth, (user) => {
+                    if (user) {
+                        window.userId = user.uid;
+                        console.log("Firebase user ID:", window.userId);
+                        // Once authenticated, load high score
+                        window.loadHighScore();
+                    } else {
+                        console.log("No user signed in to Firebase.");
+                        window.userId = null;
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+            }
+        };
+
+        // Function to load high score from Firestore
+        window.loadHighScore = async () => {
+            if (!window.db || !window.userId) {
+                console.log("Firestore or user ID not ready to load high score.");
+                return 0;
+            }
+            try {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const highScoreDocRef = doc(window.db, `artifacts/${appId}/users/${window.userId}/high_scores/personal_high_score`);
+                const docSnap = await getDoc(highScoreDocRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    window.highScore = data.score || 0;
+                    console.log("Loaded high score:", window.highScore);
+                } else {
+                    window.highScore = 0;
+                    console.log("No high score found for this user, starting at 0.");
+                }
+                document.getElementById('highScoreDisplay').textContent = window.highScore;
+            } catch (error) {
+                console.error("Error loading high score:", error);
+                window.highScore = 0; // Fallback
+            }
+        };
+
+        // Function to save high score to Firestore
+        window.saveHighScore = async (newScore) => {
+            if (!window.db || !window.userId || newScore <= window.highScore) {
+                console.log("Not saving high score. Either Firestore/user ID not ready or new score is not higher.");
+                return;
+            }
+            try {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const highScoreDocRef = doc(window.db, `artifacts/${appId}/users/${window.userId}/high_scores/personal_high_score`);
+                await setDoc(highScoreDocRef, { score: newScore, timestamp: new Date() });
+                window.highScore = newScore; // Update global high score
+                document.getElementById('highScoreDisplay').textContent = window.highScore;
+                console.log("High score saved successfully:", newScore);
+            } catch (error) {
+                console.error("Error saving high score:", error);
+            }
+        };
+    </script>
+</head>
+<body>
+    <h1>¡Que Coman Pasteles!</h1>
+    <div class="game-wrapper">
+        <div class="game-area">
+            <canvas id="gameCanvas"></canvas>
+            <div class="controls">
+                <button id="leftBtn" class="control-button move">Izquierda</button>
+                <button id="shootBtn" class="control-button">¡Disparar!</button>
+                <button id="rightBtn" class="control-button move">Derecha</button>
+            </div>
+        </div>
+        <div class="game-info">
+            <div class="info-panel">
+                <div class="score-display">
+                    Puntuación: <span id="score">0</span>
+                    <img src="https://placehold.co/24x24/fbd38d/34495e?text=🍰" alt="Pastelito" class="score-icon">
+                </div>
+            </div>
+            <div class="info-panel">
+                Récord: <span id="highScoreDisplay">0</span>
+            </div>
+            <div class="info-panel">
+                Nivel: <span id="level">1</span>
+            </div>
+            <div class="info-panel">
+                Oleada: <span id="currentWaveDisplay">1</span>/<span id="totalWavesInLevelDisplay">1</span>
+            </div>
+            <div class="info-panel">
+                Enemigos Restantes: <span id="enemiesRemaining">0</span>
+            </div>
+            <div id="activePowerUpDisplay" class="info-panel">
+                Poder Activo: Ninguno
+            </div>
+        </div>
+    </div>
+
+    <div id="gameOverOverlay" class="game-over-overlay" style="display: none;">
+        <div class="game-over-text">¡La Monarquía ha Ganado!</div>
+        <div class="final-score">Pastelitos Obtenidos: <span id="finalScore">0</span> 🍰</div>
+        <button id="restartBtn" class="restart-button">Jugar de Nuevo</button>
+    </div>
+
+    <div id="questionModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2 id="questionTitle">Pregunta Histórica</h2>
+            <p id="questionText"></p>
+            <div id="questionOptions" class="modal-options">
+                </div>
+            <div id="questionFeedback" class="modal-feedback"></div>
+            <button id="modalContinueBtn" class="modal-continue-button" style="display: none;">Continuar Juego</button>
+        </div>
+    </div>
+
+    <script type="module">
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+        const highScoreDisplay = document.getElementById('highScoreDisplay'); // New high score display
+        const levelDisplay = document.getElementById('level');
+        const currentWaveDisplay = document.getElementById('currentWaveDisplay'); // New wave display
+        const totalWavesInLevelDisplay = document.getElementById('totalWavesInLevelDisplay'); // New total waves display
+        const enemiesRemainingDisplay = document.getElementById('enemiesRemaining');
+        const gameOverOverlay = document.getElementById('gameOverOverlay');
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const restartBtn = document.getElementById('restartBtn');
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
+        const shootBtn = document.getElementById('shootBtn');
+        const activePowerUpDisplay = document.getElementById('activePowerUpDisplay');
+
+        const questionModal = document.getElementById('questionModal');
+        const questionTitle = document.getElementById('questionTitle');
+        const questionText = document.getElementById('questionText');
+        const questionOptions = document.getElementById('questionOptions');
+        const questionFeedback = document.getElementById('questionFeedback');
+        const modalContinueBtn = document.getElementById('modalContinueBtn');
+
+        // Game settings
+        const GAME_WIDTH = 600; // Fixed width for game logic
+        const GAME_HEIGHT = 400; // Fixed height for game logic (will scale with CSS)
+        const GUILLOTINE_WIDTH = 60;
+        const GUILLOTINE_HEIGHT = 60;
+        const PROJECTILE_WIDTH = 8;
+        const PROJECTILE_HEIGHT = 20;
+        let ENEMY_BASE_WIDTH = 50; // Base size, can be scaled
+        let ENEMY_BASE_HEIGHT = 50; // Base size, can be scaled
+        const INITIAL_ENEMY_ROWS = 3;
+        const INITIAL_ENEMY_COLS = 5;
+        const INITIAL_ENEMY_SPACING_X = 70;
+        const INITIAL_ENEMY_SPACING_Y = 60;
+        const ENEMY_START_Y = 50; // Fixed initial Y position for enemies
+
+        // Obstacle settings
+        const DESTRUCTIBLE_ROCK_HEALTH = 3;
+        const DESTRUCTIBLE_ROCK_POINTS = 75;
+        const INDESTRUCTIBLE_ROCK_POINTS = 0;
+
+        // Power-up settings
+        const POWER_UP_DURATION_TRIPLE = 8000; // 8 seconds
+        const POWER_UP_DURATION_RAPID = 8000; // 8 seconds
+        const POWER_UP_DURATION_PIERCING = 7000; // 7 seconds
+        const POWER_UP_DURATION_FREEZE = 5000; // 5 seconds
+        const POWER_UP_DURATION_DRONE = 5000; // 5 seconds
+
+        const POWER_UP_WIDTH = 40;
+        const POWER_UP_HEIGHT = 40;
+
+        // Boss settings
+        const BOSS_WAVE_INTERVAL = 10; // Boss appears every 10 waves cleared
+        const BOSS_HEALTH_MULTIPLIER = 5; // Boss health is 5x a regular enemy (base)
+        const BOSS_SIZE_MULTIPLIER = 2.5; // Boss is 2.5x larger than base enemy
+        const BOSS_ATTACK_COOLDOWN = 1500; // Boss attacks every 1.5 seconds
+
+        let guillotine;
+        let projectiles = [];
+        let enemies = [];
+        let obstacles = []; // New array for obstacles
+        let powerUps = []; // New array for falling power-ups
+        let drones = []; // New array for active drones
+        let boss = null; // Current boss instance
+        let bossProjectiles = []; // Projectiles fired by the boss
+
+        let score = 0;
+        let highScore = 0; // Global high score variable
+        let level = 1;
+        let currentWave = 1; // Current wave within the level
+        let totalWavesInLevel = 1; // Total waves for the current level
+        let wavesClearedTotal = 0; // Total waves cleared across all levels
+
+        let gameLoopId;
+        let isGameOver = false;
+        let gamePaused = false;
+        let enemiesDefeatedThisLevel = 0;
+
+        let activePowerUp = null;
+        let powerUpEndTime = 0;
+        let originalShootCooldown = 500;
+        let currentProjectileWidth = PROJECTILE_WIDTH;
+        let currentProjectileHeight = PROJECTILE_HEIGHT;
+
+        let enemiesAreFrozen = false;
+        let freezeEndTime = 0;
+
+        // Level configuration for difficulty scaling (up to 30 levels)
+        const MAX_LEVELS = 30;
+        const levelConfigs = [];
+
+        for (let i = 1; i <= MAX_LEVELS; i++) {
+            levelConfigs.push({
+                level: i,
+                // Waves increase every 5 levels, max 5 waves
+                numWaves: Math.min(5, 1 + Math.floor((i - 1) / 5)),
+                // Base enemies per wave, increases with level
+                baseEnemiesPerWave: Math.min(25, 5 + Math.floor(i * 0.8)),
+                // Base obstacles per wave, increases with level
+                baseObstaclesPerWave: Math.min(10, Math.floor(i * 0.3)),
+                waveDelay: 2000, // 2 seconds between waves
+                // Power-up drop chance increases, but not too high
+                // Aumentando la probabilidad de aparición de poderes
+                powerUpDropChance: Math.min(0.5, 0.05 + (i * 0.02)), // Aumentado de 0.01 + (i * 0.012)
+                // Rock spawn chance increases
+                rockSpawnChance: Math.min(0.5, 0.05 + (i * 0.02)),
+                // Indestructible rock chance increases
+                indestructibleRockChance: Math.min(0.8, 0.1 + (i * 0.03)),
+                // Enemy speed increases
+                enemySpeedMultiplier: 0.5 + (i * 0.15),
+                // Guillotine cooldown reduction (faster shooting)
+                guillotineCooldownReduction: Math.max(50, 500 - (i * 15)), // Min cooldown 50ms
+                // Enemy size reduction for higher levels
+                enemySizeMultiplier: i > 10 ? Math.max(0.7, 1 - ((i - 10) * 0.02)) : 1 // Reduce size after level 10
+            });
+        }
+
+
+        // Game Images (using placeholders for now)
+        const guillotineImage = new Image();
+        guillotineImage.src = "https://placehold.co/60x60/34495e/ecf0f1?text=🔪"; // Guillotine icon
+
+        const marieAntoinetteImage = new Image();
+        marieAntoinetteImage.src = "mariaantonietta.png"; // Imagen local de Marie Antoinette
+
+        const louisXVIImage = new Image();
+        louisXVIImage.src = "https://placehold.co/50x50/e67e22/34495e?text=👑L16"; // Louis XVI
+
+        const crownImage = new Image();
+        crownImage.src = "https://placehold.co/50x50/95a5a6/34495e?text=👑"; // Crown
+
+        const triangleImage = new Image(); // New image for triangle enemy
+        triangleImage.src = "https://placehold.co/50x50/3cb371/ecf0f1?text=▲"; // Placeholder for triangle enemy
+
+        const destructibleRockImage = new Image();
+        destructibleRockImage.src = "https://placehold.co/50x50/a0a0a0/34495e?text=🪨D"; // Destructible rock placeholder
+
+        const indestructibleRockImage = new Image();
+        indestructibleRockImage.src = "https://placehold.co/50x50/606060/ecf0f1?text=🪨I"; // Indestructible rock placeholder
+
+        // Power-up images (placeholders)
+        const tripleShotImage = new Image();
+        tripleShotImage.src = "https://placehold.co/40x40/8e44ad/ecf0f1?text=x3"; // Purple for triple shot
+
+        const rapidFireImage = new Image();
+        rapidFireImage.src = "https://placehold.co/40x40/27ae60/ecf0f1?text=⚡"; // Green for rapid fire
+
+        const piercingBulletImage = new Image();
+        piercingBulletImage.src = "https://placehold.co/40x40/3498db/ecf0f1?text= xuyên"; // Blue for piercing bullet
+
+        const enemyFreezeImage = new Image();
+        enemyFreezeImage.src = "https://placehold.co/40x40/34495e/ecf0f1?text=❄️"; // Light blue for enemy freeze
+
+        const droneCompanionImage = new Image();
+        droneCompanionImage.src = "https://placehold.co/40x40/f1c40f/34495e?text=🤖"; // Yellow for drone companion
+
+        // Power-up types and their properties
+        const POWER_UP_TYPES = {
+            'triple_shot': {
+                image: tripleShotImage,
+                effect: 'triple_shot',
+                name: 'Disparo Triple',
+                duration: POWER_UP_DURATION_TRIPLE
+            },
+            'rapid_fire': {
+                image: rapidFireImage,
+                effect: 'rapid_fire',
+                name: 'Disparo Rápido',
+                duration: POWER_UP_DURATION_RAPID
+            },
+            'piercing_bullet': {
+                image: piercingBulletImage,
+                effect: 'piercing_bullet',
+                name: 'Bala Perforante',
+                duration: POWER_UP_DURATION_PIERCING
+            },
+            'enemy_freeze': {
+                image: enemyFreezeImage,
+                effect: 'enemy_freeze',
+                name: 'Congelación Enemiga',
+                duration: POWER_UP_DURATION_FREEZE
+            },
+            'drone_companion': {
+                image: droneCompanionImage,
+                effect: 'drone_companion',
+                name: 'Acompañante Dron',
+                duration: POWER_UP_DURATION_DRONE
+            }
+        };
+
+
+        // Game Entities
+        class Guillotine {
+            constructor() {
+                this.width = GUILLOTINE_WIDTH;
+                this.height = GUILLOTINE_HEIGHT;
+                this.x = (GAME_WIDTH - this.width) / 2;
+                this.y = GAME_HEIGHT - this.height - 10;
+                this.speed = 5;
+                this.currentShootCooldown = originalShootCooldown; // Initial cooldown in milliseconds
+                this.lastShotTime = 0; // Timestamp of the last shot
+            }
+
+            draw() {
+                ctx.drawImage(guillotineImage, this.x, this.y, this.width, this.height);
+            }
+
+            moveLeft() {
+                this.x = Math.max(0, this.x - this.speed);
+            }
+
+            moveRight() {
+                this.x = Math.min(GAME_WIDTH - this.width, this.x + this.speed);
+            }
+
+            // createProjectile now takes dx for angle and isPiercing flag
+            createProjectile(dx = 0, isPiercing = false, isDroneShot = false) {
+                projectiles.push(new Projectile(this.x + this.width / 2 - currentProjectileWidth / 2, this.y, dx, isPiercing, isDroneShot));
+            }
+        }
+
+        class Projectile {
+            constructor(x, y, dx = 0, isPiercing = false, isDroneShot = false) { // dx: -1 for left, 0 for straight, 1 for right
+                this.x = x;
+                this.y = y;
+                this.width = isDroneShot ? PROJECTILE_WIDTH * 0.7 : PROJECTILE_WIDTH; // Smaller for drone
+                this.height = isDroneShot ? PROJECTILE_HEIGHT * 0.7 : PROJECTILE_HEIGHT; // Smaller for drone
+                this.speed = isDroneShot ? 5 : 7; // Slower for drone
+                this.dx = dx * (this.speed / 2); // Horizontal speed component for angled shots
+                this.isPiercing = isPiercing;
+                this.isDroneShot = isDroneShot;
+            }
+
+            draw() {
+                if (this.isPiercing) {
+                    ctx.fillStyle = '#3498db'; // Blue for piercing
+                } else if (this.isDroneShot) {
+                    ctx.fillStyle = '#f1c40f'; // Yellow for drone shot
+                } else {
+                    ctx.fillStyle = '#f39c12'; // Orange/Yellow for normal projectile
+                }
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+
+            update() {
+                this.y -= this.speed;
+                this.x += this.dx; // Move horizontally for angled shots
+            }
+        }
+
+        class Enemy {
+            constructor(x, y, type, currentEnemyWidth, currentEnemyHeight, enemySpeedMultiplier) {
+                this.x = x;
+                this.y = y;
+                this.width = currentEnemyWidth;
+                this.height = currentEnemyHeight;
+                this.type = type;
+                this.image = this.getImageByType(type);
+                // Base speed with random variation
+                this.speedX = (0.5 + enemySpeedMultiplier) * (0.75 + Math.random() * 0.5); // 75% to 125% of base speed
+                this.speedY = 0.1; // Constant downward drift
+                this.directionX = Math.random() < 0.5 ? 1 : -1; // Initial horizontal direction
+                this.points = this.getPointsByType(type);
+
+                // Timer for random horizontal direction changes
+                this.randomDirectionChangeInterval = 1000 + Math.random() * 2000; // Change every 1 to 3 seconds
+                this.lastDirectionChangeTime = performance.now();
+            }
+
+            getImageByType(type) {
+                switch (type) {
+                    case 'marie': return marieAntoinetteImage;
+                    case 'louis': return louisXVIImage;
+                    case 'crown': return crownImage;
+                    case 'triangle': return triangleImage; // Use triangle image
+                    default: return crownImage; // Fallback
+                }
+            }
+
+            getPointsByType(type) {
+                switch (type) {
+                    case 'marie': return 50;
+                    case 'louis': return 40;
+                    case 'crown': return 20;
+                    case 'triangle': return 30; // Points for triangle enemy
+                    default: return 10;
+                }
+            }
+
+            draw() {
+                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                // Optional: Draw a "frozen" overlay
+                if (enemiesAreFrozen) {
+                    ctx.fillStyle = 'rgba(173, 216, 230, 0.5)'; // Light blue translucent overlay
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                }
+            }
+
+            update() {
+                if (!enemiesAreFrozen) { // Only move if not frozen
+                    const now = performance.now();
+
+                    // Randomly change horizontal direction
+                    if (now - this.lastDirectionChangeTime > this.randomDirectionChangeInterval) {
+                        this.directionX *= -1; // Flip direction
+                        this.randomDirectionChangeInterval = 1000 + Math.random() * 2000; // New random interval
+                        this.lastDirectionChangeTime = now;
+                    }
+
+                    // Simple side-to-side movement and then drop
+                    this.x += this.speedX * this.directionX;
+                    this.y += this.speedY; // Constant downward movement
+
+                    // Reverse direction if hitting horizontal boundaries
+                    if (this.x + this.width > GAME_WIDTH || this.x < 0) {
+                        this.directionX *= -1; // Reverse horizontal direction
+                        this.y += this.height / 2; // Drop down when hitting wall (use enemy's height)
+                    }
+
+                    // Game over if enemy reaches bottom
+                    if (this.y + this.height > GAME_HEIGHT) {
+                        endGame();
+                    }
+                }
+            }
+        }
+
+        class Obstacle {
+            constructor(x, y, type, currentObstacleWidth, currentObstacleHeight, obstacleSpeedMultiplier) {
+                this.x = x;
+                this.y = y;
+                this.width = currentObstacleWidth; // Rocks can be same size as enemies for simplicity
+                this.height = currentObstacleHeight;
+                this.type = type; // 'destructible_rock' or 'indestructible_rock'
+                this.isIndestructible = (type === 'indestructible_rock');
+                this.health = this.isIndestructible ? Infinity : DESTRUCTIBLE_ROCK_HEALTH;
+                this.initialColor = this.isIndestructible ? '#606060' : '#a0a0a0'; // Darker grey for indestructible, lighter for destructible
+                this.color = this.initialColor;
+                this.points = this.isIndestructible ? INDESTRUCTIBLE_ROCK_POINTS : DESTRUCTIBLE_ROCK_POINTS;
+                this.speed = 0.5 * obstacleSpeedMultiplier; // Rocks move at a slightly slower but increasing speed
+                this.direction = 1; // 1 for right, -1 for left
+                this.image = this.isIndestructible ? indestructibleRockImage : destructibleRockImage;
+            }
+
+            draw() {
+                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                // Optional: Draw health indicator for destructible rocks
+                if (!this.isIndestructible && this.health > 0) {
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 16px Inter'; // Use Inter font for consistency
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(this.health, this.x + this.width / 2, this.y + this.height / 2);
+                }
+            }
+
+            update() {
+                // ONLY destructible rocks move
+                if (!this.isIndestructible && !enemiesAreFrozen) { // Destructible rocks also freeze
+                    this.x += this.speed * this.direction;
+
+                    if (this.x + this.width > GAME_WIDTH || this.x < 0) {
+                        this.direction *= -1;
+                        this.y += this.height / 2; // Drop down when hitting wall (use obstacle's height)
+                    }
+
+                    // Game over if moving obstacle reaches bottom
+                    if (this.y + this.height > GAME_HEIGHT) {
+                        endGame(); // Moving rocks reaching bottom also cause game over
+                    }
+                }
+                // Indestructible rocks do not move or trigger game over by falling off screen (as they don't fall)
+            }
+
+            takeHit() {
+                if (!this.isIndestructible) {
+                    this.health--;
+                    // Visual feedback: briefly change color (or use image for hit state)
+                    // For now, just a quick color flash
+                    this.image.src = "https://placehold.co/50x50/e74c3c/ecf0f1?text=💥"; // Flash red on hit
+                    setTimeout(() => {
+                        this.image.src = destructibleRockImage.src; // Revert to original image
+                    }, 100);
+                }
+            }
+        }
+
+        class PowerUp {
+            constructor(x, y, type) {
+                this.x = x;
+                this.y = y;
+                this.width = POWER_UP_WIDTH;
+                this.height = POWER_UP_HEIGHT;
+                this.type = type;
+                this.image = POWER_UP_TYPES[type].image;
+                this.speed = 2; // Power-ups fall slowly
+            }
+
+            draw() {
+                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+            }
+
+            update() {
+                this.y += this.speed; // Power-ups fall down
+            }
+        }
+
+        class Drone {
+            constructor(guillotine) {
+                this.guillotine = guillotine;
+                this.width = GUILLOTINE_WIDTH * 0.6; // Smaller than guillotine
+                this.height = GUILLOTINE_HEIGHT * 0.6;
+                this.x = this.guillotine.x + this.guillotine.width / 2 - this.width / 2; // Follow guillotine
+                this.y = this.guillotine.y - this.height - 10; // Slightly above guillotine
+                this.speed = 5; // Movement speed to follow guillotine
+                this.shootCooldown = 600; // Drone shoots a bit slower than player
+                this.lastShotTime = 0;
+                this.image = droneCompanionImage; // Use drone image
+            }
+
+            draw() {
+                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+            }
+
+            update() {
+                // Follow guillotine's X position
+                this.x = this.guillotine.x + this.guillotine.width / 2 - this.width / 2;
+
+                // Make drone shoot
+                const now = performance.now();
+                if (now - this.lastShotTime > this.shootCooldown) {
+                    projectiles.push(new Projectile(this.x + this.width / 2 - PROJECTILE_WIDTH / 2, this.y, 0, false, true)); // Drone shot
+                    this.lastShotTime = now;
+                }
+            }
+        }
+
+        class Boss {
+            constructor() {
+                this.width = ENEMY_BASE_WIDTH * BOSS_SIZE_MULTIPLIER; // Giant Marie Antoinette
+                this.height = ENEMY_BASE_HEIGHT * BOSS_SIZE_MULTIPLIER;
+                this.x = (GAME_WIDTH - this.width) / 2;
+                this.y = 20; // Start near the top
+                this.image = marieAntoinetteImage; // Use Marie Antoinette image
+                this.health = 10 * BOSS_HEALTH_MULTIPLIER; // Much higher health
+                this.maxHealth = this.health; // For health bar calculation
+                this.points = 5000; // High points for defeating boss
+                this.speedX = 1; // Initial horizontal speed
+                this.speedY = 0.05; // Slow vertical descent
+                this.directionX = Math.random() < 0.5 ? 1 : -1;
+
+                this.attackCooldown = BOSS_ATTACK_COOLDOWN; // Boss attacks every 1.5 seconds
+                this.lastAttackTime = performance.now();
+            }
+
+            draw() {
+                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+
+                // Draw health bar for the boss
+                const healthBarWidth = this.width * (this.health / this.maxHealth);
+                ctx.fillStyle = '#e74c3c'; // Red health bar
+                ctx.fillRect(this.x, this.y - 15, healthBarWidth, 10);
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(this.x, this.y - 15, this.width, 10);
+            }
+
+            update() {
+                if (!enemiesAreFrozen) { // Boss also freezes
+                    this.x += this.speedX * this.directionX;
+                    this.y += this.speedY;
+
+                    // Bounce off walls
+                    if (this.x + this.width > GAME_WIDTH || this.x < 0) {
+                        this.directionX *= -1;
+                    }
+
+                    // Boss attacks
+                    const now = performance.now();
+                    if (now - this.lastAttackTime > this.attackCooldown) {
+                        this.shootAttack();
+                        this.lastAttackTime = now;
+                    }
+
+                    // Game over if boss reaches guillotine
+                    if (this.y + this.height > guillotine.y) {
+                        endGame();
+                        return; // Stop game loop immediately
+                    }
+                }
+            }
+
+            shootAttack() {
+                // Boss can shoot multiple projectiles or a spread
+                // Example: 3 projectiles in a small arc
+                bossProjectiles.push(new BossProjectile(this.x + this.width / 2, this.y + this.height, -0.5));
+                bossProjectiles.push(new BossProjectile(this.x + this.width / 2, this.y + this.height, 0));
+                bossProjectiles.push(new BossProjectile(this.x + this.width / 2, this.y + this.height, 0.5));
+            }
+
+            takeHit() {
+                this.health--;
+            }
+        }
+
+        class BossProjectile {
+            constructor(x, y, dx = 0) {
+                this.x = x;
+                this.y = y;
+                this.width = PROJECTILE_WIDTH * 1.5; // Slightly larger than player projectiles
+                this.height = PROJECTILE_HEIGHT * 1.5;
+                this.speed = 4; // Slower than player projectiles, easier to dodge
+                this.dx = dx * (this.speed / 2); // Horizontal speed component
+            }
+
+            draw() {
+                ctx.fillStyle = '#ff0000'; // Red for boss projectiles
+                ctx.fillRect(this.x - this.width / 2, this.y, this.width, this.height); // Center the projectile
+            }
+
+            update() {
+                this.y += this.speed; // Moves downwards
+                this.x += this.dx;
+            }
+        }
+
+
+        // Questions for the game
+        const questions = [
+            {
+                question: "¿Cuál fue una consecuencia ideológica duradera de la Revolución Francesa en el orden político europeo?",
+                options: [
+                    { text: "La restauración absoluta del poder monárquico", isCorrect: false, explanation: "La Revolución Francesa debilitó el absolutismo monárquico, no lo restauró." },
+                    { text: "La legitimación del colonialismo europeo", isCorrect: false, explanation: "Aunque el colonialismo continuó, la Revolución no lo legitimó ideológicamente; de hecho, sus ideales de libertad y autodeterminación a menudo lo contradecían." },
+                    { text: "La expansión de los principios del liberalismo y republicanismo", isCorrect: true, explanation: "Los ideales de libertad, igualdad y fraternidad se difundieron por Europa, inspirando movimientos liberales y republicanos." },
+                    { text: "La consolidación de la nobleza feudal", isCorrect: false, explanation: "La Revolución Francesa abolió los privilegios feudales y el poder de la nobleza." }
+                ],
+                level: 1
+            },
+            {
+                question: "¿Qué interpretación se puede hacer del papel del Tercer Estado en el inicio de la Revolución?",
+                options: [
+                    { text: "Fue un grupo pasivo hasta que lo movilizó la nobleza", isCorrect: false, explanation: "El Tercer Estado fue activo y se auto-movilizó por sus propias demandas." },
+                    { text: "Representaba a una élite minoritaria con intereses propios", isCorrect: false, explanation: "Aunque incluía a la burguesía, representaba a la vasta mayoría de la población no privilegiada." },
+                    { text: "Actuó como fuerza motriz en busca de representación y justicia social", isCorrect: true, explanation: "El Tercer Estado, harto de la desigualdad y la falta de representación, fue el motor principal de la Revolución." },
+                    { text: "Solo se rebeló por los altos impuestos, sin razones políticas", isCorrect: false, explanation: "Sus razones eran tanto económicas (impuestos) como políticas (falta de derechos y representación)." }
+                ],
+                level: 1
+            },
+            {
+                question: "¿Cómo influyeron los ideales de la Ilustración en el desarrollo de la Revolución Francesa?",
+                options: [
+                    { text: "Establecieron una visión conservadora de la autoridad", isCorrect: false, explanation: "La Ilustración promovió el cuestionamiento de la autoridad tradicional y el absolutismo." },
+                    { text: "Justificaron el absolutismo mediante la razón", isCorrect: false, explanation: "Los filósofos ilustrados criticaron el absolutismo y defendieron la separación de poderes y los derechos individuales." },
+                    { text: "Proporcionaron fundamentos ideológicos para cuestionar el Antiguo Régimen", isCorrect: true, explanation: "Ideas como la soberanía popular, la separación de poderes y los derechos naturales fueron clave para desafiar el sistema existente." },
+                    { text: "Promovieron únicamente la fe religiosa como principio organizador", isCorrect: false, explanation: "La Ilustración enfatizó la razón y la ciencia sobre la fe dogmática." }
+                ],
+                level: 1
+            },
+            {
+                question: "¿Qué análisis explica mejor la radicalización del proceso revolucionario con la llegada de Robespierre al poder?",
+                options: [
+                    { text: "Fue causada por la traición del rey Luis XVI", isCorrect: false, explanation: "Aunque la traición del rey contribuyó, la radicalización fue un proceso más complejo con múltiples factores." },
+                    { text: "Respondía al intento de estabilizar la economía nacional", isCorrect: false, explanation: "Aunque se intentó estabilizar la economía, la radicalización se centró más en la eliminación de opositores y amenazas." },
+                    { text: "Fue el resultado de tensiones internas y amenazas externas", isCorrect: true, explanation: "La guerra contra potencias extranjeras y las luchas internas entre facciones revolucionarias llevaron a medidas extremas para 'salvar la Revolución'." },
+                    { text: "Fue planeada por la nobleza para desacreditar la Revolución", isCorrect: false, explanation: "La nobleza era el objetivo de la radicalización, no su instigadora." }
+                ],
+                level: 2
+            },
+            {
+                question: "¿Por qué se considera la toma de la Bastilla como un símbolo trascendental de la Revolución?",
+                options: [
+                    { text: "Porque era un palacio real", isCorrect: false, explanation: "Era una fortaleza-prisión, no un palacio real." },
+                    { text: "Porque representaba la caída del sistema judicial monárquico", isCorrect: false, explanation: "Simbolizó más la caída del absolutismo y la opresión que solo el sistema judicial." },
+                    { text: "Porque simbolizó el poder del pueblo frente al absolutismo", isCorrect: true, explanation: "La Bastilla era un símbolo de la tiranía monárquica, y su caída demostró el poder de la voluntad popular." },
+                    { text: "Porque fue la primera victoria militar del ejército revolucionario", isCorrect: false, explanation: "Fue un levantamiento popular, no una victoria militar organizada del ejército." }
+                ],
+                level: 2
+            },
+            {
+                question: "¿Qué evaluación crítica puede hacerse sobre el período del Terror?",
+                options: [
+                    { text: "Fue un ejemplo de aplicación pura de la justicia ilustrada", isCorrect: false, explanation: "El Terror, con sus ejecuciones masivas y juicios sumarios, se alejó de los principios de justicia y derechos de la Ilustración." },
+                    { text: "Fue una etapa necesaria para alcanzar la igualdad total", isCorrect: false, explanation: "Aunque buscaba defender la Revolución, la violencia desmedida generó un debate sobre si los fines justifican los medios." },
+                    { text: "Contradijo los ideales de la Revolución al usar la violencia sistemática", isCorrect: true, explanation: "A pesar de sus objetivos revolucionarios, el uso de la represión y la violencia masiva por parte del Estado fue una contradicción a los ideales de libertad y derechos individuales." },
+                    { text: "Logró una paz duradera sin necesidad de represión", isCorrect: false, explanation: "El Terror fue un período de gran represión y violencia, no de paz duradera." }
+                ],
+                level: 3
+            },
+            {
+                question: "¿Qué implicación tuvo la ejecución de Luis XVI en la percepción internacional de la Revolución?",
+                options: [
+                    { text: "Fue vista como una muestra de tolerancia religiosa", isCorrect: false, explanation: "La ejecución de un monarca no tiene relación directa con la tolerancia religiosa." },
+                    { text: "Se interpretó como un acto de reconciliación", isCorrect: false, explanation: "Fue un acto radical que polarizó aún más las opiniones." },
+                    { text: "Provocó temor en las monarquías europeas y guerras contra Francia", isCorrect: true, explanation: "La ejecución del rey fue un shock para las monarquías europeas y llevó a una escalada de conflictos y coaliciones contra la Francia revolucionaria." },
+                    { text: "Generó una ola de apoyo monárquico en América Latina", isCorrect: false, explanation: "En América Latina, inspiró movimientos independentistas, no apoyo monárquico." }
+                ],
+                level: 3
+            },
+            {
+                question: "¿Qué relación puede establecerse entre la Revolución Francesa y la Declaración de los Derechos del Hombre y del Ciudadano?",
+                options: [
+                    { text: "Fue un documento conservador que defendía los privilegios feudales", isCorrect: false, explanation: "La Declaración abolió los privilegios feudales y proclamó la igualdad de derechos." },
+                    { text: "Representó la formalización de los principios revolucionarios", isCorrect: true, explanation: "La Declaración articuló los ideales de libertad, igualdad y soberanía popular que guiaron la Revolución." },
+                    { text: "Fue redactada exclusivamente por la nobleza para limitar al rey", isCorrect: false, explanation: "Fue redactada por la Asamblea Nacional, dominada por el Tercer Estado, para establecer los derechos de todos los ciudadanos." },
+                    { text: "Apoyaba la esclavitud y la monarquía absoluta", isCorrect: false, explanation: "La Declaración defendía la libertad y la igualdad, lo que contradecía la esclavitud y el absolutismo." }
+                ],
+                level: 4
+            },
+            {
+                question: "¿Por qué Napoleón Bonaparte es considerado una consecuencia directa de la Revolución Francesa?",
+                options: [
+                    { text: "Porque fue elegido por la nobleza para restaurar el Antiguo Régimen", isCorrect: false, explanation: "Napoleón llegó al poder a través de un golpe de estado y consolidó muchos cambios revolucionarios, no restauró el Antiguo Régimen." },
+                    { text: "Porque mantuvo la monarquía sin cambios", isCorrect: false, explanation: "Napoleón se coronó emperador, pero su gobierno fue un nuevo tipo de régimen, no la monarquía borbónica." },
+                    { text: "Porque consolidó muchos ideales revolucionarios bajo un gobierno autoritario", isCorrect: true, explanation: "Napoleón extendió los principios de la Revolución (igualdad legal, código civil) por Europa, aunque bajo un régimen imperial y autoritario." },
+                    { text: "Porque impuso el poder de la Iglesia sobre el Estado", isCorrect: false, explanation: "Napoleón controló la Iglesia y la puso al servicio del Estado, no al revés." }
+                ],
+                level: 4
+            },
+            {
+                question: "¿Qué evaluación se puede hacer de los cambios sociales provocados por la Revolución?",
+                options: [
+                    { text: "Profundizaron la desigualdad entre clases", isCorrect: false, explanation: "La Revolución buscó reducir la desigualdad y abolir los privilegios estamentales." },
+                    { text: "Mantuvieron intactos los privilegios de la nobleza", isCorrect: false, explanation: "Los privilegios de la nobleza fueron abolidos, y su poder disminuyó drásticamente." },
+                    { text: "Permitieron la emergencia de una nueva clase dominante: la burguesía", isCorrect: true, explanation: "La Revolución eliminó las barreras estamentales, permitiendo que la burguesía, basada en la riqueza y el mérito, ascendiera social y políticamente." },
+                    { text: "Redujeron las oportunidades de participación política", isCorrect: false, explanation: "La Revolución amplió la participación política, aunque no de forma universal e inmediata." }
+                ],
+                level: 5
+            },
+            {
+                question: "¿Cómo afectó la Revolución Francesa al pensamiento político contemporáneo?",
+                options: [
+                    { text: "Reforzó el absolutismo", isCorrect: false, explanation: "La Revolución desafió el absolutismo y promovió sistemas de gobierno más representativos." },
+                    { text: "Estableció la idea de que los derechos humanos son naturales y universales", isCorrect: true, explanation: "La Declaración de los Derechos del Hombre y del Ciudadano sentó un precedente fundamental para el reconocimiento de derechos inherentes a todos los individuos." },
+                    { text: "Impulsó la supremacía del clero en la política", isCorrect: false, explanation: "La Revolución redujo el poder de la Iglesia y estableció la separación Iglesia-Estado." },
+                    { text: "Promovió la desigualdad como principio natural", isCorrect: false, explanation: "La Revolución se basó en los principios de igualdad y justicia social." }
+                ],
+                level: 5
+            },
+            {
+                question: "¿Qué juicio crítico puede hacerse del papel de las mujeres en la Revolución Francesa?",
+                options: [
+                    { text: "Fueron totalmente excluidas sin participación alguna", isCorrect: false, explanation: "Las mujeres participaron activamente en eventos clave y movimientos políticos." },
+                    { text: "Obtuvieron igualdad legal y política plena", isCorrect: false, explanation: "A pesar de su participación, la igualdad de derechos para las mujeres no se logró plenamente durante la Revolución y fue un proceso posterior." },
+                    { text: "Participaron activamente, aunque sus derechos fueron limitados posteriormente", isCorrect: true, explanation: "Las mujeres jugaron un rol crucial, pero sus demandas de igualdad política fueron en gran medida ignoradas o reprimidas tras la fase más radical." },
+                    { text: "Actuaron únicamente como víctimas del proceso", isCorrect: false, explanation: "Fueron agentes activos del cambio, no solo víctimas." }
+                ],
+                level: 5
+            },
+            {
+                question: "¿Cuál fue una de las causas estructurales profundas de la Revolución Francesa?",
+                options: [
+                    { text: "La expansión territorial del imperio", isCorrect: false, explanation: "Aunque Francia tenía un imperio, la causa principal fue interna." },
+                    { text: "El desarrollo del arte barroco", isCorrect: false, explanation: "El arte barroco es un estilo artístico, no una causa de la Revolución." },
+                    { text: "La crisis fiscal y la desigualdad económica del Antiguo Régimen", isCorrect: true, explanation: "La bancarrota del Estado y la carga impositiva desproporcionada sobre el Tercer Estado fueron causas fundamentales." },
+                    { text: "El crecimiento del comercio transatlántico", isCorrect: false, explanation: "El comercio existía, pero no fue la causa principal de la crisis interna." }
+                ],
+                level: 5
+            },
+            {
+                question: "¿Qué interpretación se puede hacer del fracaso de la monarquía constitucional?",
+                options: [
+                    { text: "Fue debido a la lealtad de Luis XVI a los principios revolucionarios", isCorrect: false, explanation: "Luis XVI intentó huir y conspiró contra la Revolución, mostrando deslealtad." },
+                    { text: "Fue causada por la escasa participación del pueblo", isCorrect: false, explanation: "El pueblo tuvo una participación activa, pero la monarquía constitucional no satisfizo sus demandas." },
+                    { text: "Fracasó por la desconfianza mutua entre el rey y la Asamblea", isCorrect: true, explanation: "La duplicidad del rey y la radicalización de la Asamblea llevaron al colapso de este sistema." },
+                    { text: "Funcionó eficazmente hasta la llegada de Napoleón", isCorrect: false, explanation: "La monarquía constitucional duró poco y fue inestable mucho antes de Napoleón." }
+                ],
+                level: 5
+            },
+            {
+                question: "¿Qué consecuencias tuvo la Revolución Francesa en las colonias europeas?",
+                options: [
+                    { text: "No tuvo ningún impacto más allá de Francia", isCorrect: false, explanation: "La Revolución Francesa tuvo un impacto global, especialmente en las colonias." },
+                    { text: "Inspiró movimientos independentistas y demandas de igualdad", isCorrect: true, explanation: "Los ideales revolucionarios de libertad e igualdad resonaron en las colonias, impulsando sus propias luchas." },
+                    { text: "Impulsó nuevas políticas de esclavitud", isCorrect: false, explanation: "Aunque la esclavitud no fue abolida inmediatamente, los ideales revolucionarios eventualmente llevaron a su cuestionamiento." },
+                    { text: "Fortaleció el control colonial europeo", isCorrect: false, explanation: "Debilitó el control colonial al inspirar resistencia y movimientos de independencia." }
+                ],
+                level: 5
+            },
+            {
+                question: "¿Qué elemento ideológico permitió justificar la soberanía popular durante la Revolución?",
+                options: [
+                    { text: "El derecho divino de los reyes", isCorrect: false, explanation: "El derecho divino es la base del absolutismo, no de la soberanía popular." },
+                    { text: "El contrato social de Rousseau", isCorrect: true, explanation: "Las ideas de Rousseau sobre la voluntad general y el contrato social fueron fundamentales para legitimar el poder del pueblo." },
+                    { text: "El sistema estamental", isCorrect: false, explanation: "El sistema estamental se basaba en privilegios de nacimiento, opuesto a la soberanía popular." },
+                    { text: "La supremacía militar", isCorrect: false, explanation: "Aunque la fuerza militar fue importante, la justificación ideológica vino de la filosofía." }
+                ],
+                level: 5
+            },
+            {
+                question: "¿Qué juicio crítico puede hacerse sobre el ascenso de la burguesía tras la Revolución?",
+                options: [
+                    { text: "Fue una regresión hacia el feudalismo", isCorrect: false, explanation: "Fue un paso hacia un sistema capitalista, alejándose del feudalismo." },
+                    { text: "Consolidó un nuevo orden social basado en méritos económicos", isCorrect: true, explanation: "La Revolución permitió a la burguesía, con su riqueza y habilidades, establecerse como la nueva clase dominante, basada en el mérito y la propiedad." },
+                    { text: "Reafirmó los privilegios de la aristocracia", isCorrect: false, explanation: "La Revolución desmanteló los privilegios de la aristocracia." },
+                    { text: "No alteró la estructura de clases", isCorrect: false, explanation: "Transformó radicalmente la estructura de clases, eliminando los estamentos." }
+                ],
+                level: 5
+            },
+            {
+                question: "¿Cómo puede interpretarse la disolución de la Asamblea Nacional?",
+                options: [
+                    { text: "Como un acto de sumisión a la nobleza", isCorrect: false, explanation: "La Asamblea Nacional fue un órgano revolucionario que desafió a la nobleza." },
+                    { text: "Como una transición natural hacia un régimen parlamentario", isCorrect: false, explanation: "Su disolución a menudo fue parte de giros políticos, no siempre hacia un parlamentarismo estable." },
+                    { text: "Como el inicio del retroceso del poder popular", isCorrect: true, explanation: "A menudo, la disolución de asambleas revolucionarias marcó un intento de centralizar el poder o de frenar la participación popular más radical." },
+                    { text: "Como una forma de fortalecer el absolutismo", isCorrect: false, explanation: "La Revolución luchó contra el absolutismo; la disolución de la Asamblea era un evento interno de la Revolución." }
+                ],
+                level: 5
+            },
+            {
+                question: "¿Qué impacto tuvo la Revolución Francesa en los conceptos de ciudadanía?",
+                options: [
+                    { text: "Estableció que la ciudadanía solo era hereditaria", isCorrect: false, explanation: "La Revolución abolió los privilegios de nacimiento y promovió la igualdad legal." },
+                    { text: "Redujo el concepto de ciudadanía a la élite religiosa", isCorrect: false, explanation: "La Revolución buscó una ciudadanía más inclusiva, aunque con limitaciones iniciales." },
+                    { text: "Introdujo la noción de ciudadanía basada en derechos y deberes", isCorrect: true, explanation: "La Declaración de los Derechos del Hombre y del Ciudadano definió la ciudadanía en términos de derechos naturales y la participación en la formación de la ley." },
+                    { text: "Mantuvo la exclusión política de todos los no nobles", isCorrect: false, explanation: "La Revolución eliminó la exclusión basada en la nobleza, aunque introdujo otras formas de exclusión (por ejemplo, basadas en la propiedad)." }
+                ],
+                level: 5
+            },
+            {
+                question: "¿Qué interpretación permite entender el fin del Directorio y el inicio del Consulado?",
+                options: [
+                    { text: "Fue una maniobra democrática de la nobleza", isCorrect: false, explanation: "Fue un golpe de estado que puso fin al Directorio, no una maniobra democrática de la nobleza." },
+                    { text: "Reflejó la incapacidad del pueblo para autogobernarse", isCorrect: false, explanation: "Reflejó la inestabilidad política y la búsqueda de un gobierno fuerte tras años de conflicto." },
+                    { text: "Representó un giro autoritario con respaldo popular", isCorrect: true, explanation: "El golpe de estado de Napoleón, que estableció el Consulado, fue un giro hacia un gobierno más autoritario, pero inicialmente contó con cierto apoyo popular cansado de la inestabilidad." },
+                    { text: "Fue promovido por la Iglesia para controlar al Estado", isCorrect: false, explanation: "La Iglesia había perdido gran parte de su poder durante la Revolución y no promovió este cambio político." }
+                ],
+                level: 5
+            }
+        ];
+
+        let currentQuestion = null;
+        let answeredQuestions = new Set(); // To keep track of questions already asked
+
+        // Utility function to shuffle an array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+            }
+            return array;
+        }
+
+        // Game Functions
+        async function initGame() {
+            canvas.width = GAME_WIDTH;
+            canvas.height = GAME_HEIGHT;
+
+            guillotine = new Guillotine();
+            projectiles = [];
+            enemies = [];
+            obstacles = []; // Initialize obstacles array
+            powerUps = []; // Initialize power-ups array
+            drones = []; // Initialize drones array
+            boss = null; // Reset boss
+            bossProjectiles = []; // Reset boss projectiles
+            score = 0;
+            level = 1;
+            currentWave = 1;
+            wavesClearedTotal = 0; // Reset total waves cleared
+            isGameOver = false;
+            gamePaused = false;
+            enemiesDefeatedThisLevel = 0;
+            answeredQuestions.clear();
+
+            // Store original values for power-up reset
+            originalShootCooldown = 500;
+            currentProjectileWidth = PROJECTILE_WIDTH;
+            currentProjectileHeight = PROJECTILE_HEIGHT;
+            guillotine.currentShootCooldown = originalShootCooldown; // Ensure initial cooldown is set
+
+            activePowerUp = null; // No active power-up at start
+            powerUpEndTime = 0;
+            enemiesAreFrozen = false; // Ensure enemies are not frozen at start
+            freezeEndTime = 0; // Reset freeze end time
+            activePowerUpDisplay.textContent = 'Poder Activo: Ninguno'; // Reset power-up display
+
+            scoreDisplay.textContent = score;
+            levelDisplay.textContent = level;
+            currentWaveDisplay.textContent = currentWave;
+            // Set total waves for level 1 initially
+            totalWavesInLevel = levelConfigs[0].numWaves;
+            totalWavesInLevelDisplay.textContent = totalWavesInLevel;
+            enemiesRemainingDisplay.textContent = 0; // Reset for initial display
+            gameOverOverlay.style.display = 'none';
+            questionModal.style.display = 'none';
+
+            // Initialize Firebase and load high score
+            await window.initFirebase();
+            await window.loadHighScore(); // This will update highScoreDisplay
+
+            spawnWave(); // Call spawnWave instead of spawnEntities for the first wave
+            triggerQuestion(); // Trigger first question for Level 1
+            startGameLoop();
+        }
+
+        function spawnWave() {
+            enemies = [];
+            obstacles = []; // Clear obstacles for new wave
+            powerUps = []; // Clear power-ups for new wave
+            drones = []; // Clear drones for new wave (drones are tied to power-up duration, but clear on new wave for simplicity)
+
+            const currentLevelConfig = levelConfigs[level - 1]; // Get config for current level
+            if (!currentLevelConfig) {
+                console.error(`No level config found for level ${level}. Ending game.`);
+                endGame();
+                return;
+            }
+
+            const enemyTypes = ['crown', 'crown', 'louis', 'marie', 'triangle'];
+
+            // Adjust enemy/obstacle size based on level config
+            const currentEnemyWidth = ENEMY_BASE_WIDTH * currentLevelConfig.enemySizeMultiplier;
+            const currentEnemyHeight = ENEMY_BASE_HEIGHT * currentLevelConfig.enemySizeMultiplier;
+
+            // Calculate grid dimensions based on number of entities for this wave
+            const numEntitiesForWave = currentLevelConfig.baseEnemiesPerWave + currentLevelConfig.baseObstaclesPerWave;
+            // A simple way to arrange them: calculate rows/cols to fit N entities
+            const estimatedCols = Math.min(10, Math.ceil(Math.sqrt(numEntitiesForWave * 1.5))); // Try to make it somewhat square-ish
+            const estimatedRows = Math.ceil(numEntitiesForWave / estimatedCols);
+
+            const dynamicEntitySpacingX = Math.max(currentEnemyWidth + 10, INITIAL_ENEMY_SPACING_X - (level - 1) * 3);
+            const dynamicEntitySpacingY = Math.max(currentEnemyHeight + 10, INITIAL_ENEMY_SPACING_Y - (level - 1) * 3);
+
+            const totalGridWidth = estimatedCols * dynamicEntitySpacingX - (dynamicEntitySpacingX - currentEnemyWidth);
+            const dynamicStartX = (GAME_WIDTH - totalGridWidth) / 2;
+            const dynamicStartY = ENEMY_START_Y;
+
+            // Power-up drop chance for this level
+            const powerUpDropChance = currentLevelConfig.powerUpDropChance;
+            const rockSpawnChance = currentLevelConfig.rockSpawnChance;
+            const indestructibleRockChance = currentLevelConfig.indestructibleRockChance;
+
+            let entitiesSpawnedInWave = 0;
+            const maxEntitiesToSpawn = currentLevelConfig.baseEnemiesPerWave + currentLevelConfig.baseObstaclesPerWave;
+
+            // Spawn entities for the current wave
+            for (let r = 0; r < estimatedRows && entitiesSpawnedInWave < maxEntitiesToSpawn; r++) {
+                for (let c = 0; c < estimatedCols && entitiesSpawnedInWave < maxEntitiesToSpawn; c++) {
+                    const entityX = dynamicStartX + c * dynamicEntitySpacingX + (Math.random() - 0.5) * 10;
+                    const entityY = dynamicStartY + r * dynamicEntitySpacingY;
+
+                    if (Math.random() < rockSpawnChance) {
+                        const rockType = Math.random() < indestructibleRockChance ? 'indestructible_rock' : 'destructible_rock';
+                        obstacles.push(new Obstacle(entityX, entityY, rockType, currentEnemyWidth, currentEnemyHeight, currentLevelConfig.enemySpeedMultiplier));
+                    } else {
+                        const type = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+                        enemies.push(new Enemy(entityX, entityY, type, currentEnemyWidth, currentEnemyHeight, currentLevelConfig.enemySpeedMultiplier));
+                    }
+                    entitiesSpawnedInWave++;
+                }
+            }
+
+            // Ensure at least one entity is spawned if nothing was generated
+            if (entitiesSpawnedInWave === 0 && maxEntitiesToSpawn > 0) {
+                const type = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+                enemies.push(new Enemy(GAME_WIDTH / 2 - currentEnemyWidth / 2, ENEMY_START_Y, type, currentEnemyWidth, currentEnemyHeight, currentLevelConfig.enemySpeedMultiplier));
+            }
+
+            enemiesRemainingDisplay.textContent = enemies.length + obstacles.filter(o => !o.isIndestructible).length;
+        }
+
+        function spawnBoss() {
+            boss = new Boss();
+            enemies = []; // Clear any regular enemies
+            obstacles = []; // Clear any obstacles
+            powerUps = []; // Clear any power-ups
+            drones = []; // Clear any drones
+            bossProjectiles = []; // Clear any existing boss projectiles
+
+            // Update display to reflect boss fight
+            enemiesRemainingDisplay.textContent = "¡JEFE!";
+            activePowerUpDisplay.textContent = "¡Cuidado!";
+            gamePaused = false; // Ensure game is unpaused for boss fight
+            startGameLoop();
+        }
+
+
+        function startGameLoop() {
+            if (gameLoopId) {
+                cancelAnimationFrame(gameLoopId);
+            }
+            gameLoop();
+        }
+
+        // Function to check if the current wave is completed and handle transitions
+        function checkWaveCompletion() {
+            // Check if all regular enemies and destructible obstacles are defeated
+            const remainingDestructibleEntities = enemies.length + obstacles.filter(o => !o.isIndestructible).length;
+
+            if (boss) {
+                // If there's a boss, wave completion is tied to boss defeat
+                return; // Do nothing, boss logic handles progression
+            }
+
+            if (remainingDestructibleEntities === 0) {
+                wavesClearedTotal++; // Increment total waves cleared
+
+                const currentLevelConfig = levelConfigs[level - 1];
+
+                if (wavesClearedTotal % BOSS_WAVE_INTERVAL === 0) {
+                    // Time for a boss fight!
+                    gamePaused = true; // Pause briefly before boss appears
+                    setTimeout(() => {
+                        spawnBoss();
+                        gamePaused = false; // Unpause for boss fight
+                        startGameLoop(); // Ensure game loop resumes
+                    }, 2000); // Small delay before boss spawns
+                } else if (currentWave < currentLevelConfig.numWaves) {
+                    // Advance to next regular wave
+                    currentWave++;
+                    currentWaveDisplay.textContent = currentWave;
+                    gamePaused = true; // Pause game during wave transition
+                    setTimeout(() => {
+                        spawnWave();
+                        gamePaused = false; // Unpause after wave spawns
+                        startGameLoop(); // Ensure game loop resumes
+                    }, currentLevelConfig.waveDelay); // Small delay before next wave
+                } else {
+                    // All waves completed for the current level, level up!
+                    levelUp();
+                }
+            }
+        }
+
+        function gameLoop() {
+            if (isGameOver) {
+                return;
+            }
+            if (gamePaused) {
+                gameLoopId = requestAnimationFrame(gameLoop); // Keep requesting frames to unpause
+                return;
+            }
+
+            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT); // Clear canvas
+
+            guillotine.draw();
+
+            // Store indices of entities to be removed
+            let enemiesToRemove = new Set();
+            let projectilesToRemove = new Set();
+            let obstaclesToRemove = new Set();
+            let powerUpsToRemove = new Set(); // New set for power-ups to remove
+
+            // Update and draw boss (if active)
+            if (boss) {
+                boss.update();
+                boss.draw();
+
+                // Process player projectiles
+                for (let i = projectiles.length - 1; i >= 0; i--) {
+                    const p = projectiles[i];
+                    p.update(); // ALWAYS update projectile position
+                    p.draw();   // ALWAYS draw projectile
+
+                    // Check if projectile is off-screen
+                    if (p.y + p.height < 0 || p.x < -PROJECTILE_WIDTH || p.x > GAME_WIDTH) {
+                        projectiles.splice(i, 1);
+                        continue; // Move to the next projectile
+                    }
+
+                    // Check collision with boss
+                    if (checkCollision(p, boss)) {
+                        boss.takeHit();
+                        if (!p.isPiercing) {
+                            projectiles.splice(i, 1); // Remove non-piercing projectile
+                        }
+                        if (boss.health <= 0) {
+                            score += boss.points;
+                            scoreDisplay.textContent = score;
+                            boss = null; // Boss defeated!
+                            // Clear remaining boss projectiles
+                            bossProjectiles = [];
+                            gamePaused = true; // Pause for transition
+                            setTimeout(() => {
+                                levelUp(); // Proceed to next level
+                                gamePaused = false;
+                                startGameLoop();
+                            }, 2000); // Small delay before next level
+                            break; // Exit player projectile loop as boss is defeated
+                        }
+                    }
+                }
+
+                // Update and draw boss projectiles
+                for (let i = bossProjectiles.length - 1; i >= 0; i--) {
+                    const bp = bossProjectiles[i];
+                    bp.update();
+                    bp.draw();
+
+                    // Check collision with guillotine
+                    if (checkCollision(guillotine, bp)) {
+                        endGame(); // Game over if boss projectile hits guillotine
+                        return; // Stop game loop immediately
+                    }
+
+                    // Remove if off-screen
+                    if (bp.y > GAME_HEIGHT) {
+                        bossProjectiles.splice(i, 1);
+                    }
+                }
+            } else { // Only process regular enemies/obstacles if no boss is active
+                // Update projectiles and check for collisions (against regular enemies/obstacles)
+                for (let i = 0; i < projectiles.length; i++) {
+                    const projectile = projectiles[i];
+                    projectile.update();
+
+                    // Mark projectile for removal if it goes off screen
+                    if (projectile.y + projectile.height < 0 || projectile.x < -PROJECTILE_WIDTH || projectile.x > GAME_WIDTH) {
+                        projectilesToRemove.add(i);
+                        continue;
+                    }
+
+                    let hitThisProjectile = false; // Flag to track if this projectile hit anything (for non-piercing)
+
+                    // Check for collisions with enemies
+                    for (let j = 0; j < enemies.length; j++) {
+                        const enemy = enemies[j];
+                        if (checkCollision(projectile, enemy)) {
+                            score += enemy.points;
+                            scoreDisplay.textContent = score;
+                            enemiesDefeatedThisLevel++;
+                            enemiesToRemove.add(j);
+
+                            // Chance to drop a power-up when an enemy is destroyed
+                            const currentLevelConfig = levelConfigs[level - 1];
+                            const powerUpDropChance = currentLevelConfig ? currentLevelConfig.powerUpDropChance : 0.01; // Default low chance
+                            if (Math.random() < powerUpDropChance) {
+                                const powerUpTypesArray = Object.keys(POWER_UP_TYPES);
+                                const randomPowerUpType = powerUpTypesArray[Math.floor(Math.random() * powerUpTypesArray.length)];
+                                powerUps.push(new PowerUp(enemy.x + enemy.width / 2 - POWER_UP_WIDTH / 2, enemy.y + enemy.height / 2 - POWER_UP_HEIGHT / 2, randomPowerUpType));
+                            }
+
+                            if (!projectile.isPiercing) { // Only destroy projectile if not piercing
+                                projectilesToRemove.add(i);
+                                hitThisProjectile = true;
+                                break; // Stop checking enemies for this projectile if it's not piercing
+                            }
+                        }
+                    }
+                    if (hitThisProjectile) continue; // If non-piercing hit an enemy, move to next projectile
+
+                    // Check for collisions with obstacles
+                    for (let k = 0; k < obstacles.length; k++) {
+                        const obstacle = obstacles[k];
+                        if (checkCollision(projectile, obstacle)) {
+                            if (obstacle.isIndestructible) {
+                                projectilesToRemove.add(i); // Projectile always destroyed by hitting an indestructible obstacle
+                                hitThisProjectile = true;
+                            } else { // Destructible rock
+                                obstacle.takeHit();
+                                if (obstacle.health <= 0) {
+                                    obstaclesToRemove.add(k);
+                                    score += obstacle.points; // Add points for destroying obstacles
+                                }
+                                if (!projectile.isPiercing) { // Only destroy projectile if not piercing
+                                    projectilesToRemove.add(i);
+                                    hitThisProjectile = true;
+                                }
+                            }
+                            if (hitThisProjectile) break; // Stop checking obstacles for this projectile if it's not piercing or hit indestructible
+                        }
+                    }
+                }
+
+                // Filter out removed entities
+                projectiles = projectiles.filter((_, index) => !projectilesToRemove.has(index));
+                enemies = enemies.filter((_, index) => !enemiesToRemove.has(index));
+                obstacles = obstacles.filter((_, index) => !obstaclesToRemove.has(index));
+
+                // Update and draw remaining projectiles
+                for (const projectile of projectiles) {
+                    projectile.draw();
+                }
+
+                // Update and draw enemies
+                for (const enemy of enemies) {
+                    enemy.update();
+                    enemy.draw();
+                }
+
+                // Update and draw obstacles
+                for (const obstacle of obstacles) {
+                    obstacle.update(); // Only destructible ones move (and freeze if active)
+                    obstacle.draw();
+                }
+
+                // Update and draw power-ups, check for collection
+                for (let i = 0; i < powerUps.length; i++) {
+                    const powerUp = powerUps[i];
+                    powerUp.update();
+                    powerUp.draw();
+
+                    // Check collision with guillotine
+                    if (checkCollision(guillotine, powerUp)) {
+                        applyPowerUp(powerUp.type);
+                        powerUpsToRemove.add(i);
+                    }
+
+                    // Remove if off screen
+                    if (powerUp.y > GAME_HEIGHT) {
+                        powerUpsToRemove.add(i);
+                    }
+                }
+                powerUps = powerUps.filter((_, index) => !powerUpsToRemove.has(index));
+
+                // Update and draw drones
+                for (const drone of drones) {
+                    drone.update();
+                    drone.draw();
+                }
+            }
+
+
+            // Check for power-up expiration
+            const now = performance.now();
+            if (activePowerUp && now > powerUpEndTime) {
+                removePowerUp();
+            }
+            // Check for freeze power-up expiration separately
+            if (enemiesAreFrozen && now > freezeEndTime) {
+                enemiesAreFrozen = false;
+            }
+
+
+            // Update enemies remaining display (only enemies and destructible obstacles)
+            // If boss is active, display "JEFE!"
+            if (!boss) {
+                enemiesRemainingDisplay.textContent = enemies.length + obstacles.filter(o => !o.isIndestructible).length;
+            }
+
+
+            checkWaveCompletion();
+
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        function checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+
+        function levelUp() {
+            // Check if max levels reached
+            if (level >= MAX_LEVELS) {
+                console.log("¡Felicidades! Has completado todos los niveles.");
+                endGame(true); // Game won scenario
+                return;
+            }
+
+            level++;
+            levelDisplay.textContent = level;
+            enemiesDefeatedThisLevel = 0; // Reset count for new level
+            currentWave = 1; // Reset wave for new level
+            currentWaveDisplay.textContent = currentWave;
+
+            const currentLevelConfig = levelConfigs[level - 1];
+            totalWavesInLevel = currentLevelConfig.numWaves;
+            totalWavesInLevelDisplay.textContent = totalWavesInLevel;
+
+            spawnWave(); // Spawn first wave of new level
+            triggerQuestion(); // Trigger a question for the new level
+
+            // Decrease guillotine cooldown for faster shooting (base speed)
+            originalShootCooldown = currentLevelConfig.guillotineCooldownReduction;
+            guillotine.currentShootCooldown = originalShootCooldown; // Reset to new base cooldown
+            removePowerUp(); // Ensure any active power-up is removed when leveling up
+        }
+
+        function endGame(wonGame = false) {
+            isGameOver = true;
+            cancelAnimationFrame(gameLoopId);
+            finalScoreDisplay.textContent = score;
+            gameOverOverlay.style.display = 'flex';
+
+            if (wonGame) {
+                document.querySelector('.game-over-text').textContent = '¡Has Restaurado la República!';
+                document.querySelector('.game-over-text').style.color = '#2ecc71'; // Green for win
+            } else {
+                document.querySelector('.game-over-text').textContent = '¡La Monarquía ha Ganado!';
+                document.querySelector('.game-over-text').style.color = '#e74c3c'; // Red for lose
+            }
+
+            // Save high score if current score is higher
+            if (score > window.highScore) {
+                window.saveHighScore(score);
+            }
+        }
+
+        function availableQuestionsForLevel() {
+            return questions.filter(q => q.level <= level && !answeredQuestions.has(q));
+        }
+
+        function triggerQuestion() {
+            gamePaused = true;
+            let availableQs = availableQuestionsForLevel();
+
+            if (availableQs.length > 0) {
+                // Pick a random question from available ones
+                currentQuestion = availableQs[Math.floor(Math.random() * availableQs.length)];
+                answeredQuestions.add(currentQuestion); // Mark as asked
+
+                questionTitle.textContent = "¡Momento de Reflexión Histórica!";
+                questionText.textContent = currentQuestion.question;
+                questionOptions.innerHTML = ''; // Clear previous options
+                questionFeedback.textContent = '';
+                modalContinueBtn.style.display = 'none';
+
+                // Shuffle the options before displaying them
+                const shuffledOptions = shuffleArray([...currentQuestion.options]); // Create a shallow copy to shuffle
+
+                shuffledOptions.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.textContent = option.text;
+                    button.onclick = () => selectAnswer(option, button);
+                    questionOptions.appendChild(button);
+                });
+
+                questionModal.style.display = 'flex';
+            } else {
+                // No more questions for this level or already answered all
+                gamePaused = false; // Resume game if no question
+                startGameLoop();
+            }
+        }
+
+        function selectAnswer(selectedOption, clickedButton) {
+            // Disable all options after selection
+            Array.from(questionOptions.children).forEach(button => {
+                button.disabled = true;
+                // Find the original option object associated with this button's text
+                const originalOption = currentQuestion.options.find(opt => opt.text === button.textContent);
+
+                if (button === clickedButton) {
+                    button.classList.add(selectedOption.isCorrect ? 'correct' : 'incorrect');
+                } else if (originalOption && originalOption.isCorrect) {
+                    button.classList.add('correct'); // Highlight correct answer
+                }
+            });
+
+            if (selectedOption.isCorrect) {
+                questionFeedback.textContent = "¡Correcto! ¡Viva la Revolución!";
+                questionFeedback.classList.remove('incorrect');
+                questionFeedback.classList.add('correct');
+                score += 100; // Bonus points for correct answer
+                scoreDisplay.textContent = score;
+            } else {
+                questionFeedback.textContent = `Incorrecto. ${selectedOption.explanation}`;
+                questionFeedback.classList.remove('correct');
+                questionFeedback.classList.add('incorrect');
+            }
+            modalContinueBtn.style.display = 'block';
+        }
+
+        modalContinueBtn.addEventListener('click', () => {
+            questionModal.style.display = 'none';
+            gamePaused = false;
+            startGameLoop();
+        });
+
+        // Function to handle shooting (with cooldown and power-ups)
+        function handleShoot() {
+            const now = performance.now();
+            let effectiveCooldown = guillotine.currentShootCooldown; // Start with base cooldown
+
+            if (activePowerUp === 'rapid_fire') {
+                effectiveCooldown = Math.max(50, originalShootCooldown / 3); // Much faster shooting
+            } else if (activePowerUp === 'piercing_bullet') {
+                effectiveCooldown = originalShootCooldown * 1.2; // Slightly slower for piercing
+            }
+
+            if (!isGameOver && !gamePaused && (now - guillotine.lastShotTime > effectiveCooldown)) {
+                if (activePowerUp === 'triple_shot') {
+                    // Triple shot: vertical, 45 deg left, 45 deg right
+                    guillotine.createProjectile(0, false); // Vertical (not piercing by default)
+                    guillotine.createProjectile(-0.7, false); // Angled left
+                    guillotine.createProjectile(0.7, false); // Angled right
+                } else if (activePowerUp === 'piercing_bullet') {
+                    guillotine.createProjectile(0, true); // Piercing bullet
+                } else {
+                    guillotine.createProjectile(0, false); // Normal shot
+                }
+                guillotine.lastShotTime = now;
+            }
+        }
+
+        function applyPowerUp(type) {
+            // If a power-up is already active, remove it first
+            if (activePowerUp) {
+                removePowerUp();
+            }
+
+            activePowerUp = type;
+            powerUpEndTime = performance.now() + POWER_UP_TYPES[type].duration;
+            activePowerUpDisplay.textContent = `Poder Activo: ${POWER_UP_TYPES[type].name}`;
+
+            // Apply specific effects
+            if (type === 'rapid_fire') {
+                // Cooldown is handled in handleShoot, no direct change here
+            } else if (type === 'piercing_bullet') {
+                // Piercing effect is handled in gameLoop collision logic
+            } else if (type === 'enemy_freeze') {
+                enemiesAreFrozen = true;
+                freezeEndTime = performance.now() + POWER_UP_TYPES[type].duration;
+            } else if (type === 'drone_companion') {
+                drones.push(new Drone(guillotine));
+            }
+        }
+
+        function removePowerUp() {
+            if (!activePowerUp) return; // No power-up to remove
+
+            // Revert effects
+            if (activePowerUp === 'rapid_fire') {
+                // Cooldown reverts automatically in handleShoot
+            } else if (activePowerUp === 'piercing_bullet') {
+                // No specific projectile size change, effect handled in collision
+            } else if (activePowerUp === 'enemy_freeze') {
+                enemiesAreFrozen = false; // Ensure enemies unfreeze
+            } else if (activePowerUp === 'drone_companion') {
+                drones = []; // Remove all drones
+            }
+            activePowerUp = null;
+            powerUpEndTime = 0;
+            activePowerUpDisplay.textContent = 'Poder Activo: Ninguno'; // Update power-up display
+        }
+
+
+        // Event Listeners for controls (Mouse/Touch for continuous movement)
+        let moveLeftInterval = null;
+        let moveRightInterval = null;
+
+        leftBtn.addEventListener('mousedown', () => {
+            if (!isGameOver && !gamePaused && !moveLeftInterval) { // Prevent multiple intervals
+                moveLeftInterval = setInterval(() => guillotine.moveLeft(), 20);
+            }
+        });
+        leftBtn.addEventListener('mouseup', () => { clearInterval(moveLeftInterval); moveLeftInterval = null; });
+        leftBtn.addEventListener('mouseleave', () => { clearInterval(moveLeftInterval); moveLeftInterval = null; });
+        leftBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (!isGameOver && !gamePaused && !moveLeftInterval) {
+                moveLeftInterval = setInterval(() => guillotine.moveLeft(), 20);
+            }
+        }, { passive: false });
+        leftBtn.addEventListener('touchend', () => { clearInterval(moveLeftInterval); moveLeftInterval = null; });
+        leftBtn.addEventListener('touchcancel', () => { clearInterval(moveLeftInterval); moveLeftInterval = null; });
+
+        rightBtn.addEventListener('mousedown', () => {
+            if (!isGameOver && !gamePaused && !moveRightInterval) { // Prevent multiple intervals
+                moveRightInterval = setInterval(() => guillotine.moveRight(), 20);
+            }
+        });
+        rightBtn.addEventListener('mouseup', () => { clearInterval(moveRightInterval); moveRightInterval = null; });
+        rightBtn.addEventListener('mouseleave', () => { clearInterval(moveRightInterval); moveRightInterval = null; });
+        rightBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (!isGameOver && !gamePaused && !moveRightInterval) {
+                moveRightInterval = setInterval(() => guillotine.moveRight(), 20);
+            }
+        }, { passive: false });
+        rightBtn.addEventListener('touchend', () => { clearInterval(moveRightInterval); moveRightInterval = null; });
+        rightBtn.addEventListener('touchcancel', () => { clearInterval(moveRightInterval); moveRightInterval = null; });
+
+
+        shootBtn.addEventListener('click', handleShoot); // Use the new handleShoot function
+
+        // Keyboard controls for continuous movement
+        let keyboardMoveLeftInterval = null;
+        let keyboardMoveRightInterval = null;
+        let keysPressed = {}; // To track currently pressed keys
+
+        document.addEventListener('keydown', (e) => {
+            if (isGameOver || gamePaused) return;
+
+            // Prevent repeat calls if key is held down
+            if (keysPressed[e.key]) return;
+            keysPressed[e.key] = true;
+
+            switch (e.key) {
+                case 'ArrowLeft':
+                    if (!keyboardMoveLeftInterval) {
+                        keyboardMoveLeftInterval = setInterval(() => guillotine.moveLeft(), 20);
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (!keyboardMoveRightInterval) {
+                        keyboardMoveRightInterval = setInterval(() => guillotine.moveRight(), 20);
+                    }
+                    break;
+                case ' ': // Spacebar to shoot
+                    e.preventDefault(); // Prevent scrolling down
+                    handleShoot(); // Use the new handleShoot function
+                    break;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keysPressed[e.key] = false; // Mark key as released
+
+            switch (e.key) {
+                case 'ArrowLeft':
+                    clearInterval(keyboardMoveLeftInterval);
+                    keyboardMoveLeftInterval = null;
+                    break;
+                case 'ArrowRight':
+                    clearInterval(keyboardMoveRightInterval);
+                    keyboardMoveRightInterval = null;
+                    break;
+            }
+        });
+
+        restartBtn.addEventListener('click', initGame);
+
+        // Initialize game on window load
+        window.onload = initGame;
+    </script>
+</body>
+</html>
