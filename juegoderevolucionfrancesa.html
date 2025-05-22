@@ -448,7 +448,7 @@
 
     <div id="questionModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
-            <h2 id="questionTitle">Pregunta de Medida</h2>
+            <h2 id="questionTitle">¡Pregunta de Medida!</h2>
             <p id="questionText"></p>
             <div id="questionOptions" class="modal-options">
                 </div>
@@ -1785,7 +1785,11 @@
 
                 shuffledOptions.forEach((option, index) => {
                     const button = document.createElement('button');
-                    button.textContent = option.text;
+                    // Create a span to hold the MathJax content
+                    const span = document.createElement('span');
+                    span.textContent = option.text; // Set the LaTeX string here
+                    button.appendChild(span); // Append the span to the button
+
                     button.onclick = () => selectAnswer(option, button);
                     questionOptions.appendChild(button);
                 });
@@ -1793,6 +1797,8 @@
                 questionModal.style.display = 'flex';
                 // Render MathJax after content is added to the DOM
                 if (window.MathJax) {
+                    // Tell MathJax to typeset the question text and the newly created buttons within questionOptions
+                    // MathJax will process the spans inside the buttons.
                     window.MathJax.typesetPromise([questionText, questionOptions]).then(() => {
                         console.log('MathJax typeset complete');
                     }).catch((err) => console.error('MathJax typesetting failed:', err));
@@ -1809,7 +1815,8 @@
             Array.from(questionOptions.children).forEach(button => {
                 button.disabled = true;
                 // Find the original option object associated with this button's text
-                const originalOption = currentQuestion.options.find(opt => opt.text === button.textContent);
+                const originalOptionText = button.querySelector('span').textContent; // Get text from the span
+                const originalOption = currentQuestion.options.find(opt => opt.text === originalOptionText);
 
                 if (button === clickedButton) {
                     button.classList.add(selectedOption.isCorrect ? 'correct' : 'incorrect');
