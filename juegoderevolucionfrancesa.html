@@ -839,10 +839,10 @@
                 if (!this.isIndestructible) {
                     this.health--;
                     // Visual feedback: briefly change color (or use image for hit state)
-                    // For now, just a quick color flash
-                    this.image.src = "torrerota.png"; // Flash red on hit
+                    // Para ahora, solo un destello de color rápido
+                    this.image.src = "https://placehold.co/50x50/e74c3c/ecf0f1?text=DMG"; // Flash rojo al ser golpeado (cambiado de 💥)
                     setTimeout(() => {
-                        this.image.src = destructibleRockImage.src; // Revert to original image
+                        this.image.src = destructibleRockImage.src; // Volver a la imagen original
                     }, 100);
                 }
             }
@@ -988,207 +988,313 @@
         }
 
 
-        // Questions for the game
+        // Questions for the game (NEW QUESTIONS)
         const questions = [
+            // Parte I: Conjuntos Nulos y “Casi en todos lados” (Null Sets y a.e.)
             {
-                question: "¿Cuál fue una consecuencia ideológica duradera de la Revolución Francesa en el orden político europeo?",
+                question: "Si $f$ es medible y $f=0$ casi en todos lados, ¿cuál afirmación es correcta?",
                 options: [
-                    { text: "La restauración absoluta del poder monárquico", isCorrect: false, explanation: "La Revolución Francesa debilitó el absolutismo monárquico, no lo restauró." },
-                    { text: "La legitimación del colonialismo europeo", isCorrect: false, explanation: "Aunque el colonialismo continuó, la Revolución no lo legitimó ideológicamente; de hecho, sus ideales de libertad y autodeterminación a menudo lo contradecían." },
-                    { text: "La expansión de los principios del liberalismo y republicanismo", isCorrect: true, explanation: "Los ideales de libertad, igualdad y fraternidad se difundieron por Europa, inspirando movimientos liberales y republicanos." },
-                    { text: "La consolidación de la nobleza feudal", isCorrect: false, explanation: "La Revolución Francesa abolió los privilegios feudales y el poder de la nobleza." }
+                    { text: "$f$ es identicamente cero.", isCorrect: false, explanation: "Que sea 'casi en todos lados' no implica que sea idénticamente cero en todos los puntos." },
+                    { text: "$\\mu(\\{x:f(x)\\neq0\\})>0$", isCorrect: false, explanation: "Si $f=0$ casi en todos lados, la medida del conjunto donde $f \\neq 0$ debe ser cero." },
+                    { text: "$\\int |f| d\\mu = 0$", isCorrect: true, explanation: "Si $f=0$ casi en todos lados, la integral de su valor absoluto es cero." },
+                    { text: "$f \\notin L^1$", isCorrect: false, explanation: "Si la integral de su valor absoluto es cero, entonces $f \\in L^1$." }
                 ],
                 level: 1
             },
             {
-                question: "¿Qué interpretación se puede hacer del papel del Tercer Estado en el inicio de la Revolución?",
+                question: "¿Cuál conjunto debe tener medida cero para que dos funciones $f$ y $g$ sean iguales casi en todos lados?",
                 options: [
-                    { text: "Fue un grupo pasivo hasta que lo movilizó la nobleza", isCorrect: false, explanation: "El Tercer Estado fue activo y se auto-movilizó por sus propias demandas." },
-                    { text: "Representaba a una élite minoritaria con intereses propios", isCorrect: false, explanation: "Aunque incluía a la burguesía, representaba a la vasta mayoría de la población no privilegiada." },
-                    { text: "Actuó como fuerza motriz en busca de representación y justicia social", isCorrect: true, explanation: "El Tercer Estado, harto de la desigualdad y la falta de representación, fue el motor principal de la Revolución." },
-                    { text: "Solo se rebeló por los altos impuestos, sin razones políticas", isCorrect: false, explanation: "Sus razones eran tanto económicas (impuestos) como políticas (falta de derechos y representación)." }
+                    { text: "$\\{x:f(x)=g(x)\\}$", isCorrect: false, explanation: "Este es el conjunto donde son iguales, no donde difieren." },
+                    { text: "$\\{x:f(x)\\neq g(x)\\}$", isCorrect: true, explanation: "Para que sean iguales casi en todos lados, deben diferir solo en un conjunto de medida cero." },
+                    { text: "$\\{x:|f(x)-g(x)|>1\\}$", isCorrect: false, explanation: "Este es un caso específico de donde difieren, pero no el conjunto completo." },
+                    { text: "$\\{x:f(x) \\text{ no es continua}\\}$", isCorrect: false, explanation: "La continuidad no es directamente relevante para la igualdad casi en todos lados." }
                 ],
                 level: 1
             },
             {
-                question: "¿Cómo influyeron los ideales de la Ilustración en el desarrollo de la Revolución Francesa?",
+                question: "Si $f_n \\to f$ punto a punto, pero no casi en todos lados, entonces:",
                 options: [
-                    { text: "Establecieron una visión conservadora de la autoridad", isCorrect: false, explanation: "La Ilustración promovió el cuestionamiento de la autoridad tradicional y el absolutismo." },
-                    { text: "Justificaron el absolutismo mediante la razón", isCorrect: false, explanation: "Los filósofos ilustrados criticaron el absolutismo y defendieron la separación de poderes y los derechos individuales." },
-                    { text: "Proporcionaron fundamentos ideológicos para cuestionar el Antiguo Régimen", isCorrect: true, explanation: "Ideas como la soberanía popular, la separación de poderes y los derechos naturales fueron clave para desafiar el sistema existente." },
-                    { text: "Promovieron únicamente la fe religiosa como principio organizador", isCorrect: false, explanation: "La Ilustración enfatizó la razón y la ciencia sobre la fe dogmática." }
+                    { text: "$f_n$ converge uniformemente", isCorrect: false, explanation: "La convergencia punto a punto no implica convergencia uniforme." },
+                    { text: "La medida del conjunto donde falla la convergencia puede ser positiva", isCorrect: true, explanation: "Si no converge casi en todos lados, significa que el conjunto donde no converge tiene medida positiva." },
+                    { text: "$f$ es continua", isCorrect: false, explanation: "La convergencia punto a punto no implica continuidad de la función límite." },
+                    { text: "$f_n \\to f$ en $L^1$", isCorrect: false, explanation: "La convergencia punto a punto no garantiza la convergencia en $L^1$." }
                 ],
                 level: 1
             },
             {
-                question: "¿Qué análisis explica mejor la radicalización del proceso revolucionario con la llegada de Robespierre al poder?",
+                question: "¿Cuál afirmación es equivalente a decir que una propiedad se cumple 'casi en todos lados'?",
                 options: [
-                    { text: "Fue causada por la traición del rey Luis XVI", isCorrect: false, explanation: "Aunque la traición del rey contribuyó, la radicalización fue un proceso más complejo con múltiples factores." },
-                    { text: "Respondía al intento de estabilizar la economía nacional", isCorrect: false, explanation: "Aunque se intentó estabilizar la economía, la radicalización se centró más en la eliminación de opositores y amenazas." },
-                    { text: "Fue el resultado de tensiones internas y amenazas externas", isCorrect: true, explanation: "La guerra contra potencias extranjeras y las luchas internas entre facciones revolucionarias llevaron a medidas extremas para 'salvar la Revolución'." },
-                    { text: "Fue planeada por la nobleza para desacreditar la Revolución", isCorrect: false, explanation: "La nobleza era el objetivo de la radicalización, no su instigadora." }
+                    { text: "Se cumple para cada punto de $X$", isCorrect: false, explanation: "Esto sería 'en todos lados', no 'casi en todos lados'." },
+                    { text: "Se cumple en un conjunto abierto", isCorrect: false, explanation: "Un conjunto abierto puede tener medida positiva." },
+                    { text: "Se cumple fuera de un conjunto nulo", isCorrect: true, explanation: "Esta es la definición de 'casi en todos lados'." },
+                    { text: "Se cumple sobre un conjunto de medida finita", isCorrect: false, explanation: "Un conjunto de medida finita puede no ser el complemento de un conjunto nulo." }
+                ],
+                level: 1
+            },
+            {
+                question: "Si $f=g$ a.e. y $f \\in L^1(\\mu)$, entonces:",
+                options: [
+                    { text: "$g \\notin L^1(\\mu)$", isCorrect: false, explanation: "Si son iguales casi en todos lados y una es integrable, la otra también lo es." },
+                    { text: "$\\int f d\\mu = \\int g d\\mu$", isCorrect: true, explanation: "Las funciones iguales casi en todos lados tienen la misma integral." },
+                    { text: "$f$ y $g$ son continuas", isCorrect: false, explanation: "La igualdad casi en todos lados y la integrabilidad no implican continuidad." },
+                    { text: "$\\int |f - g| d\\mu > 0$", isCorrect: false, explanation: "Si $f=g$ a.e., entonces $\\int |f - g| d\\mu = 0$." }
+                ],
+                level: 1
+            },
+            // Parte II: Integrales de Funciones Medibles
+            {
+                question: "Si $f\\geq0$ es medible y $\\int f d\\mu = 0$, entonces:",
+                options: [
+                    { text: "$f=1$ en un conjunto nulo", isCorrect: false, explanation: "Esto no se deduce de la integral cero." },
+                    { text: "$f=0$ a.e.", isCorrect: true, explanation: "Para funciones no negativas, una integral cero implica que la función es cero casi en todos lados." },
+                    { text: "$\\mu(X)=0$", isCorrect: false, explanation: "La medida del espacio no tiene por qué ser cero." },
+                    { text: "$f \\notin L^1$", isCorrect: false, explanation: "Si la integral es finita (cero), entonces $f \\in L^1$." }
                 ],
                 level: 2
             },
             {
-                question: "¿Por qué se considera la toma de la Bastilla como un símbolo trascendental de la Revolución?",
+                question: "¿Qué condición asegura la integrabilidad de una función medible $f$?",
                 options: [
-                    { text: "Porque era un palacio real", isCorrect: false, explanation: "Era una fortaleza-prisión, no un palacio real." },
-                    { text: "Porque representaba la caída del sistema judicial monárquico", isCorrect: false, explanation: "Simbolizó más la caída del absolutismo y la opresión que solo el sistema judicial." },
-                    { text: "Porque simbolizó el poder del pueblo frente al absolutismo", isCorrect: true, explanation: "La Bastilla era un símbolo de la tiranía monárquica, y su caída demostró el poder de la voluntad popular." },
-                    { text: "Porque fue la primera victoria militar del ejército revolucionario", isCorrect: false, explanation: "Fue un levantamiento popular, no una victoria militar organizada del ejército." }
+                    { text: "$f$ es acotada", isCorrect: false, explanation: "Una función acotada no siempre es integrable si el espacio de medida es infinito." },
+                    { text: "$\\int |f| d\\mu < \\infty$", isCorrect: true, explanation: "Esta es la definición de integrabilidad de Lebesgue." },
+                    { text: "$\\mu(X) < \\infty$", isCorrect: false, explanation: "Un espacio de medida finita no garantiza la integrabilidad de todas las funciones." },
+                    { text: "$f$ es continua", isCorrect: false, explanation: "La continuidad no implica integrabilidad." }
                 ],
                 level: 2
             },
             {
-                question: "¿Qué evaluación crítica puede hacerse sobre el período del Terror?",
+                question: "Si $f_n \\uparrow f$ y $f_n, f$ son medibles, ¿qué resultado se puede aplicar?",
                 options: [
-                    { text: "Fue un ejemplo de aplicación pura de la justicia ilustrada", isCorrect: false, explanation: "El Terror, con sus ejecuciones masivas y juicios sumarios, se alejó de los principios de justicia y derechos de la Ilustración." },
-                    { text: "Fue una etapa necesaria para alcanzar la igualdad total", isCorrect: false, explanation: "Aunque buscaba defender la Revolución, la violencia desmedida generó un debate sobre si los fines justifican los medios." },
-                    { text: "Contradijo los ideales de la Revolución al usar la violencia sistemática", isCorrect: true, explanation: "A pesar de sus objetivos revolucionarios, el uso de la represión y la violencia masiva por parte del Estado fue una contradicción a los ideales de libertad y derechos individuales." },
-                    { text: "Logró una paz duradera sin necesidad de represión", isCorrect: false, explanation: "El Terror fue un período de gran represión y violencia, no de paz duradera." }
+                    { text: "Teorema del Dominio Monótono (DCT)", isCorrect: false, explanation: "El DCT requiere una función dominante integrable." },
+                    { text: "Teorema de Fubini", isCorrect: false, explanation: "El Teorema de Fubini es para integrales sobre productos de espacios." },
+                    { text: "Teorema de Convergencia Monótona (MCT)", isCorrect: true, explanation: "El MCT se aplica a sucesiones crecientes de funciones medibles no negativas." },
+                    { text: "Teorema de Vitali", isCorrect: false, explanation: "El Teorema de Vitali es para convergencia en $L^1$." }
+                ],
+                level: 2
+            },
+            {
+                question: "El Teorema de Convergencia Dominada requiere:",
+                options: [
+                    { text: "Convergencia uniforme", isCorrect: false, explanation: "El DCT requiere convergencia punto a punto, no necesariamente uniforme." },
+                    { text: "Una función integrable que domine a $f_n$", isCorrect: true, explanation: "Esta es la condición clave del DCT: $|f_n| \\leq g$ para una $g \\in L^1$." },
+                    { text: "$\\mu(X) < \\infty$", isCorrect: false, explanation: "Aunque útil, no es una condición estricta para el DCT en general." },
+                    { text: "$f_n \\in L^\\infty$", isCorrect: false, explanation: "Las funciones no necesitan ser acotadas." }
+                ],
+                level: 2
+            },
+            {
+                question: "Si $f_n \\to f$ en $L^1$, entonces:",
+                options: [
+                    { text: "$f_n \\to f$ uniformemente", isCorrect: false, explanation: "La convergencia en $L^1$ no implica convergencia uniforme." },
+                    { text: "$\\int |f_n - f| d\\mu \\to 0$", isCorrect: true, explanation: "Esta es la definición de convergencia en $L^1$." },
+                    { text: "$f_n = f$ a.e.", isCorrect: false, explanation: "La convergencia no implica que las funciones sean iguales casi en todos lados." },
+                    { text: "$f \\notin L^1$", isCorrect: false, explanation: "Si $f_n \\to f$ en $L^1$, entonces $f \\in L^1$." }
+                ],
+                level: 2
+            },
+            // Parte III: Espacios Lp y Convergencia
+            {
+                question: "Una función $f \\in L^p$, con $p > 1$, implica que:",
+                options: [
+                    { text: "$f \\in L^q$ para todo $q < p$ si $\\mu(X) < \\infty$", isCorrect: true, explanation: "En espacios de medida finita, $L^p \\subseteq L^q$ para $p > q$." },
+                    { text: "$f \\notin L^1$", isCorrect: false, explanation: "Puede estar en $L^1$." },
+                    { text: "$f^2 \\in L^1$", isCorrect: false, explanation: "No necesariamente, a menos que $p \\geq 2$." },
+                    { text: "$f$ es continua", isCorrect: false, explanation: "Las funciones en $L^p$ no necesitan ser continuas." }
                 ],
                 level: 3
             },
             {
-                question: "¿Qué implicación tuvo la ejecución de Luis XVI en la percepción internacional de la Revolución?",
+                question: "¿Qué implica que una sucesión $f_n \\to f$ en $L^p$?",
                 options: [
-                    { text: "Fue vista como una muestra de tolerancia religiosa", isCorrect: false, explanation: "La ejecución de un monarca no tiene relación directa con la tolerancia religiosa." },
-                    { text: "Se interpretó como un acto de reconciliación", isCorrect: false, explanation: "Fue un acto radical que polarizó aún más las opiniones." },
-                    { text: "Provocó temor en las monarquías europeas y guerras contra Francia", isCorrect: true, explanation: "La ejecución del rey fue un shock para las monarquías europeas y llevó a una escalada de conflictos y coaliciones contra la Francia revolucionaria." },
-                    { text: "Generó una ola de apoyo monárquico en América Latina", isCorrect: false, explanation: "En América Latina, inspiró movimientos independentistas, no apoyo monárquico." }
+                    { text: "Convergencia punto a punto", isCorrect: false, explanation: "La convergencia en $L^p$ no implica convergencia punto a punto, solo una subsucesión puede converger a.e." },
+                    { text: "$||f_n - f||_p \\to 0$", isCorrect: true, explanation: "Esta es la definición de convergencia en $L^p$." },
+                    { text: "$f_n \\in L^\\infty$", isCorrect: false, explanation: "Las funciones no necesitan ser acotadas." },
+                    { text: "$\\int f_n \\to \\int f$", isCorrect: false, explanation: "Esto es cierto si $p=1$, pero no necesariamente para $p>1$ sin condiciones adicionales." }
                 ],
                 level: 3
             },
             {
-                question: "¿Qué relación puede establecerse entre la Revolución Francesa y la Declaración de los Derechos del Hombre y del Ciudadano?",
+                question: "Si $f \\in L^p \\cap L^q$, con $1 \\leq p < q$, ¿qué afirmación es válida?",
                 options: [
-                    { text: "Fue un documento conservador que defendía los privilegios feudales", isCorrect: false, explanation: "La Declaración abolió los privilegios feudales y proclamó la igualdad de derechos." },
-                    { text: "Representó la formalización de los principios revolucionarios", isCorrect: true, explanation: "La Declaración articuló los ideales de libertad, igualdad y soberanía popular que guiaron la Revolución." },
-                    { text: "Fue redactada exclusivamente por la nobleza para limitar al rey", isCorrect: false, explanation: "Fue redactada por la Asamblea Nacional, dominada por el Tercer Estado, para establecer los derechos de todos los ciudadanos." },
-                    { text: "Apoyaba la esclavitud y la monarquía absoluta", isCorrect: false, explanation: "La Declaración defendía la libertad y la igualdad, lo que contradecía la esclavitud y el absolutismo." }
+                    { text: "$f \\notin L^r$ para $r < p$", isCorrect: false, explanation: "Si está en $L^p$, también está en $L^r$ para $r<p$ en espacios de medida finita." },
+                    { text: "$||f||_q \\leq ||f||_p$ si $\\mu(X) < \\infty$", isCorrect: true, explanation: "En espacios de medida finita, la norma $L^q$ es menor o igual que la norma $L^p$ para $q>p$." },
+                    { text: "$f$ es no medible", isCorrect: false, explanation: "Para estar en $L^p$, la función debe ser medible." },
+                    { text: "$f \\in L^\\infty$", isCorrect: false, explanation: "No necesariamente, puede ser no acotada." }
+                ],
+                level: 3
+            },
+            {
+                question: "La completitud de $L^p$ significa que:",
+                options: [
+                    { text: "Toda sucesión de Cauchy converge en $L^p$", isCorrect: true, explanation: "Esta es la definición de un espacio completo (de Banach)." },
+                    { text: "$L^p \\subseteq C_c(X)$", isCorrect: false, explanation: "Las funciones en $L^p$ no son necesariamente continuas." },
+                    { text: "Todas las funciones son continuas", isCorrect: false, explanation: "La completitud no implica continuidad." },
+                    { text: "No hay funciones nulas", isCorrect: false, explanation: "La completitud no se relaciona con la existencia de funciones nulas." }
+                ],
+                level: 3
+            },
+            {
+                question: "En el espacio $L^\\infty$, la norma es:",
+                options: [
+                    { text: "$\\int |f| d\\mu$", isCorrect: false, explanation: "Esta es la norma $L^1$." },
+                    { text: "Esencial supremo de $|f|$", isCorrect: true, explanation: "La norma $L^\\infty$ es el supremo esencial." },
+                    { text: "Mínimo de $f$", isCorrect: false, explanation: "No es una norma estándar." },
+                    { text: "Promedio de $f$", isCorrect: false, explanation: "No es una norma estándar." }
+                ],
+                level: 3
+            },
+            // Parte IV: Evaluación e Interpretación General
+            {
+                question: "¿Cuál afirmación describe mejor el propósito de la medida de Lebesgue?",
+                options: [
+                    { text: "Generalizar la noción de “tamaño” incluso para conjuntos no intuitivos", isCorrect: true, explanation: "La medida de Lebesgue extiende la idea de longitud, área, volumen a conjuntos más complejos." },
+                    { text: "Medir solo intervalos abiertos", isCorrect: false, explanation: "Puede medir muchos más tipos de conjuntos." },
+                    { text: "Evitar los conjuntos nulos", isCorrect: false, explanation: "Los conjuntos nulos son una parte fundamental de la teoría." },
+                    { text: "Asegurar que toda función es integrable", isCorrect: false, explanation: "No todas las funciones son integrables de Lebesgue." }
                 ],
                 level: 4
             },
             {
-                question: "¿Por qué Napoleón Bonaparte es considerado una consecuencia directa de la Revolución Francesa?",
+                question: "¿Por qué es útil la $\\sigma$-aditividad?",
                 options: [
-                    { text: "Porque fue elegido por la nobleza para restaurar el Antiguo Régimen", isCorrect: false, explanation: "Napoleón llegó al poder a través de un golpe de estado y consolidó muchos cambios revolucionarios, no restauró el Antiguo Régimen." },
-                    { text: "Porque mantuvo la monarquía sin cambios", isCorrect: false, explanation: "Napoleón se coronó emperador, pero su gobierno fue un nuevo tipo de régimen, no la monarquía borbónica." },
-                    { text: "Porque consolidó muchos ideales revolucionarios bajo un gobierno autoritario", isCorrect: true, explanation: "Napoleón extendió los principios de la Revolución (igualdad legal, código civil) por Europa, aunque bajo un régimen imperial y autoritario." },
-                    { text: "Porque impuso el poder de la Iglesia sobre el Estado", isCorrect: false, explanation: "Napoleón controló la Iglesia y la puso al servicio del Estado, no al revés." }
+                    { text: "Permite extender medidas a uniones infinitas", isCorrect: true, explanation: "La $\\sigma$-aditividad es la propiedad clave para manejar uniones contables disjuntas." },
+                    { text: "Implica continuidad uniforme", isCorrect: false, explanation: "No tiene relación directa con la continuidad uniforme." },
+                    { text: "Garantiza acotamiento de funciones", isCorrect: false, explanation: "No garantiza acotamiento." },
+                    { text: "Requiere dominio compacto", isCorrect: false, explanation: "No requiere dominio compacto." }
                 ],
                 level: 4
             },
             {
-                question: "¿Qué evaluación se puede hacer de los cambios sociales provocados por la Revolución?",
+                question: "Una función medible es aquella que:",
                 options: [
-                    { text: "Profundizaron la desigualdad entre clases", isCorrect: false, explanation: "La Revolución buscó reducir la desigualdad y abolir los privilegios estamentales." },
-                    { text: "Mantuvieron intactos los privilegios de la nobleza", isCorrect: false, explanation: "Los privilegios de la nobleza fueron abolidos, y su poder disminuyó drásticamente." },
-                    { text: "Permitieron la emergencia de una nueva clase dominante: la burguesía", isCorrect: true, explanation: "La Revolución eliminó las barreras estamentales, permitiendo que la burguesía, basada en la riqueza y el mérito, ascendiera social y políticamente." },
-                    { text: "Redujeron las oportunidades de participación política", isCorrect: false, explanation: "La Revolución amplió la participación política, aunque no de forma universal e inmediata." }
+                    { text: "Es continua en todos los puntos", isCorrect: false, explanation: "Las funciones medibles pueden tener muchas discontinuidades." },
+                    { text: "La preimagen de cualquier Borel es medible", isCorrect: true, explanation: "Esta es la definición de una función medible." },
+                    { text: "Tiene derivada en todos los puntos", isCorrect: false, explanation: "La diferenciabilidad es una propiedad más fuerte que la medibilidad." },
+                    { text: "Se puede escribir como serie de senos", isCorrect: false, explanation: "Esto se refiere a series de Fourier, no a la medibilidad en general." }
+                ],
+                level: 4
+            },
+            {
+                question: "Si $\\mu(E)=0$, entonces:",
+                options: [
+                    { text: "Toda función sobre $E$ es no medible", isCorrect: false, explanation: "La medibilidad no se ve afectada por la medida del dominio." },
+                    { text: "$\\int_E f d\\mu = \\infty$", isCorrect: false, explanation: "La integral sobre un conjunto de medida cero es siempre cero." },
+                    { text: "$\\int_E f d\\mu = 0$ para cualquier $f \\in L^1$", isCorrect: true, explanation: "La integral de cualquier función integrable sobre un conjunto de medida cero es cero." },
+                    { text: "$E$ es denso", isCorrect: false, explanation: "Un conjunto de medida cero no tiene por qué ser denso." }
+                ],
+                level: 4
+            },
+            {
+                question: "El conjunto de funciones simples es:",
+                options: [
+                    { text: "No medible", isCorrect: false, explanation: "Las funciones simples son por definición medibles." },
+                    { text: "Denso en $L^1$", isCorrect: true, explanation: "Las funciones simples son fundamentales para aproximar funciones en $L^1$." },
+                    { text: "Disjunto de $L^1$", isCorrect: false, explanation: "Las funciones simples integrables son elementos de $L^1$." },
+                    { text: "No integrable", isCorrect: false, explanation: "Las funciones simples son integrables." }
+                ],
+                level: 4
+            },
+            // Parte V: Casos Aplicados y Teoremas
+            {
+                question: "El teorema de Fubini se aplica cuando:",
+                options: [
+                    { text: "Se tiene un producto de medidas $\\sigma$-finita", isCorrect: true, explanation: "Fubini es para integrales sobre espacios de producto con medidas $\\sigma$-finitas." },
+                    { text: "$f$ es continua", isCorrect: false, explanation: "La continuidad no es una condición para Fubini." },
+                    { text: "La medida es discreta", isCorrect: false, explanation: "Fubini se aplica a medidas generales, no solo discretas." },
+                    { text: "Las variables son independientes", isCorrect: false, explanation: "Esto es relevante en probabilidad, no una condición general para Fubini." }
                 ],
                 level: 5
             },
             {
-                question: "¿Cómo afectó la Revolución Francesa al pensamiento político contemporáneo?",
+                question: "En el contexto del teorema de Radon-Nikodým, si $\\nu \\ll \\mu$, entonces:",
                 options: [
-                    { text: "Reforzó el absolutismo", isCorrect: false, explanation: "La Revolución desafió el absolutismo y promovió sistemas de gobierno más representativos." },
-                    { text: "Estableció la idea de que los derechos humanos son naturales y universales", isCorrect: true, explanation: "La Declaración de los Derechos del Hombre y del Ciudadano sentó un precedente fundamental para el reconocimiento de derechos inherentes a todos los individuos." },
-                    { text: "Impulsó la supremacía del clero en la política", isCorrect: false, explanation: "La Revolución redujo el poder de la Iglesia y estableció la separación Iglesia-Estado." },
-                    { text: "Promovió la desigualdad como principio natural", isCorrect: false, explanation: "La Revolución se basó en los principios de igualdad y justicia social." }
+                    { text: "$\\mu \\ll \\nu$", isCorrect: false, explanation: "Esto sería la equivalencia de medidas, no solo la continuidad absoluta." },
+                    { text: "Existe $f \\in L^1(\\mu)$ tal que $d\\nu = f d\\mu$", isCorrect: true, explanation: "Esta es la conclusión del teorema de Radon-Nikodým." },
+                    { text: "$\\nu = \\mu$", isCorrect: false, explanation: "Las medidas no tienen por qué ser iguales." },
+                    { text: "$f \\in L^\\infty$", isCorrect: false, explanation: "La densidad no tiene por qué ser acotada." }
                 ],
                 level: 5
             },
             {
-                question: "¿Qué juicio crítico puede hacerse del papel de las mujeres en la Revolución Francesa?",
+                question: "La unicidad de la derivada de Radon–Nikodým implica que:",
                 options: [
-                    { text: "Fueron totalmente excluidas sin participación alguna", isCorrect: false, explanation: "Las mujeres participaron activamente en eventos clave y movimientos políticos." },
-                    { text: "Obtuvieron igualdad legal y política plena", isCorrect: false, explanation: "A pesar de su participación, la igualdad de derechos para las mujeres no se logró plenamente durante la Revolución y fue un proceso posterior." },
-                    { text: "Participaron activamente, aunque sus derechos fueron limitados posteriormente", isCorrect: true, explanation: "Las mujeres jugaron un rol crucial, pero sus demandas de igualdad política fueron en gran medida ignoradas o reprimidas tras la fase más radical." },
-                    { text: "Actuaron únicamente como víctimas del proceso", isCorrect: false, explanation: "Fueron agentes activos del cambio, no solo víctimas." }
+                    { text: "Dos funciones densidad que coincidan a.e. representan la misma medida", isCorrect: true, explanation: "La derivada de Radon-Nikodým es única casi en todos lados." },
+                    { text: "No puede existir más de una función", isCorrect: false, explanation: "Se refiere a la unicidad a.e., no a una única función en sentido estricto." },
+                    { text: "La derivada es continua", isCorrect: false, explanation: "La derivada no tiene por qué ser continua." },
+                    { text: "La medida debe ser finita", isCorrect: false, explanation: "El teorema se aplica a medidas $\\sigma$-finitas." }
                 ],
                 level: 5
             },
             {
-                question: "¿Cuál fue una de las causas estructurales profundas de la Revolución Francesa?",
+                question: "Si $f_n \\to f$ a.e., pero no en $L^1$, entonces:",
                 options: [
-                    { text: "La expansión territorial del imperio", isCorrect: false, explanation: "Aunque Francia tenía un imperio, la causa principal fue interna." },
-                    { text: "El desarrollo del arte barroco", isCorrect: false, explanation: "El arte barroco es un estilo artístico, no una causa de la Revolución." },
-                    { text: "La crisis fiscal y la desigualdad económica del Antiguo Régimen", isCorrect: true, explanation: "La bancarrota del Estado y la carga impositiva desproporcionada sobre el Tercer Estado fueron causas fundamentales." },
-                    { text: "El crecimiento del comercio transatlántico", isCorrect: false, explanation: "El comercio existía, pero no fue la causa principal de la crisis interna." }
+                    { text: "$\\int f_n \\to \\int f$", isCorrect: false, explanation: "Si no converge en $L^1$, la integral puede no converger." },
+                    { text: "$\\int |f_n - f| d\\mu \\not\\to 0$", isCorrect: true, explanation: "Esto es la negación de la convergencia en $L^1$." },
+                    { text: "$f_n = f$", isCorrect: false, explanation: "La convergencia a.e. no implica igualdad." },
+                    { text: "$f$ no es integrable", isCorrect: false, explanation: "La función límite $f$ puede ser integrable, pero la convergencia en $L^1$ falla por otras razones." }
                 ],
                 level: 5
             },
             {
-                question: "¿Qué interpretación se puede hacer del fracaso de la monarquía constitucional?",
+                question: "El uso de funciones escalonadas (simple functions) en integración es para:",
                 options: [
-                    { text: "Fue debido a la lealtad de Luis XVI a los principios revolucionarios", isCorrect: false, explanation: "Luis XVI intentó huir y conspiró contra la Revolución, mostrando deslealtad." },
-                    { text: "Fue causada por la escasa participación del pueblo", isCorrect: false, explanation: "El pueblo tuvo una participación activa, pero la monarquía constitucional no satisfizo sus demandas." },
-                    { text: "Fracasó por la desconfianza mutua entre el rey y la Asamblea", isCorrect: true, explanation: "La duplicidad del rey y la radicalización de la Asamblea llevaron al colapso de este sistema." },
-                    { text: "Funcionó eficazmente hasta la llegada de Napoleón", isCorrect: false, explanation: "La monarquía constitucional duró poco y fue inestable mucho antes de Napoleón." }
+                    { text: "Representar conjuntos nulos", isCorrect: false, explanation: "Se usan para aproximar funciones, no conjuntos nulos." },
+                    { text: "Aproximar funciones medibles desde abajo", isCorrect: true, explanation: "Las funciones simples son la base para definir la integral de Lebesgue para funciones no negativas." },
+                    { text: "Probar continuidad", isCorrect: false, explanation: "Se usan para la integración, no la continuidad." },
+                    { text: "Demostrar derivabilidad", isCorrect: false, explanation: "No se usan para la derivabilidad." }
                 ],
                 level: 5
             },
+            // Parte VI: Crítica de Conceptos
             {
-                question: "¿Qué consecuencias tuvo la Revolución Francesa en las colonias europeas?",
+                question: "¿Por qué no toda función continua es integrable?",
                 options: [
-                    { text: "No tuvo ningún impacto más allá de Francia", isCorrect: false, explanation: "La Revolución Francesa tuvo un impacto global, especialmente en las colonias." },
-                    { text: "Inspiró movimientos independentistas y demandas de igualdad", isCorrect: true, explanation: "Los ideales revolucionarios de libertad e igualdad resonaron en las colonias, impulsando sus propias luchas." },
-                    { text: "Impulsó nuevas políticas de esclavitud", isCorrect: false, explanation: "Aunque la esclavitud no fue abolida inmediatamente, los ideales revolucionarios eventualmente llevaron a su cuestionamiento." },
-                    { text: "Fortaleció el control colonial europeo", isCorrect: false, explanation: "Debilitó el control colonial al inspirar resistencia y movimientos de independencia." }
+                    { text: "Puede divergir en un conjunto de medida no cero", isCorrect: true, explanation: "Una función continua puede no ser integrable si su integral sobre un conjunto de medida positiva es infinita (ej. $f(x)=x$ en $\\mathbb{R}$)." },
+                    { text: "Porque la continuidad impide la acotación", isCorrect: false, explanation: "La continuidad no impide la acotación; una función puede ser continua y no acotada." },
+                    { text: "Por no ser medible", isCorrect: false, explanation: "Toda función continua es medible." },
+                    { text: "Porque no son simples", isCorrect: false, explanation: "La integrabilidad no depende de ser una función simple." }
                 ],
-                level: 5
+                level: 6 // Asignar a un nivel más alto si se desea que aparezca más tarde
             },
             {
-                question: "¿Qué elemento ideológico permitió justificar la soberanía popular durante la Revolución?",
+                question: "Si una propiedad se cumple fuera de un conjunto de medida cero, entonces:",
                 options: [
-                    { text: "El derecho divino de los reyes", isCorrect: false, explanation: "El derecho divino es la base del absolutismo, no de la soberanía popular." },
-                    { text: "El contrato social de Rousseau", isCorrect: true, explanation: "Las ideas de Rousseau sobre la voluntad general y el contrato social fueron fundamentales para legitimar el poder del pueblo." },
-                    { text: "El sistema estamental", isCorrect: false, explanation: "El sistema estamental se basaba en privilegios de nacimiento, opuesto a la soberanía popular." },
-                    { text: "La supremacía militar", isCorrect: false, explanation: "Aunque la fuerza militar fue importante, la justificación ideológica vino de la filosofía." }
+                    { text: "Se cumple en un conjunto abierto", isCorrect: false, explanation: "No necesariamente, el complemento de un conjunto de medida cero no tiene por qué ser abierto." },
+                    { text: "Se dice que se cumple a.e.", isCorrect: true, explanation: "Esta es la definición de 'casi en todos lados' (a.e.)." },
+                    { text: "No se puede integrar", isCorrect: false, explanation: "La integrabilidad no se ve afectada por esto." },
+                    { text: "La función es no medible", isCorrect: false, explanation: "La medibilidad no se ve afectada por esto." }
                 ],
-                level: 5
+                level: 6
             },
             {
-                question: "¿Qué juicio crítico puede hacerse sobre el ascenso de la burguesía tras la Revolución?",
+                question: "¿Qué sucede si $f \\notin L^1$ pero $\\mu(\\{x:|f(x)|>1\\})=0$?",
                 options: [
-                    { text: "Fue una regresión hacia el feudalismo", isCorrect: false, explanation: "Fue un paso hacia un sistema capitalista, alejándose del feudalismo." },
-                    { text: "Consolidó un nuevo orden social basado en méritos económicos", isCorrect: true, explanation: "La Revolución permitió a la burguesía, con su riqueza y habilidades, establecerse como la nueva clase dominante, basada en el mérito y la propiedad." },
-                    { text: "Reafirmó los privilegios de la aristocracia", isCorrect: false, explanation: "La Revolución desmanteló los privilegios de la aristocracia." },
-                    { text: "No alteró la estructura de clases", isCorrect: false, explanation: "Transformó radicalmente la estructura de clases, eliminando los estamentos." }
+                    { text: "$f$ es integrable", isCorrect: false, explanation: "Si $f \\notin L^1$, no es integrable." },
+                    { text: "$f$ no es medible", isCorrect: false, explanation: "La condición de medida cero no implica no medibilidad." },
+                    { text: "$f$ puede divergir sobre un conjunto de medida cero", isCorrect: true, explanation: "La función puede ser muy grande en un conjunto de medida cero, lo que la hace no integrable, incluso si es 'casi' acotada." },
+                    { text: "$f=0$ a.e.", isCorrect: false, explanation: "La condición de medida cero para $|f|>1$ no implica que $f=0$ a.e." }
                 ],
-                level: 5
+                level: 6
             },
             {
-                question: "¿Cómo puede interpretarse la disolución de la Asamblea Nacional?",
+                question: "La integral de Lebesgue permite:",
                 options: [
-                    { text: "Como un acto de sumisión a la nobleza", isCorrect: false, explanation: "La Asamblea Nacional fue un órgano revolucionario que desafió a la nobleza." },
-                    { text: "Como una transición natural hacia un régimen parlamentario", isCorrect: false, explanation: "Su disolución a menudo fue parte de giros políticos, no siempre hacia un parlamentarismo estable." },
-                    { text: "Como el inicio del retroceso del poder popular", isCorrect: true, explanation: "A menudo, la disolución de asambleas revolucionarias marcó un intento de centralizar el poder o de frenar la participación popular más radical." },
-                    { text: "Como una forma de fortalecer el absolutismo", isCorrect: false, explanation: "La Revolución luchó contra el absolutismo; la disolución de la Asamblea era un evento interno de la Revolución." }
+                    { text: "Integrar funciones con infinitos discontinuidades", isCorrect: true, explanation: "La integral de Lebesgue es más general que la de Riemann y puede integrar funciones con muchas discontinuidades." },
+                    { text: "Solo funciones acotadas", isCorrect: false, explanation: "Puede integrar funciones no acotadas." },
+                    { text: "Únicamente funciones continuas", isCorrect: false, explanation: "Integra funciones medibles, que no tienen por qué ser continuas." },
+                    { text: "Riemannianas equivalentes", isCorrect: false, explanation: "Es una generalización, no solo una equivalencia." }
                 ],
-                level: 5
+                level: 6
             },
             {
-                question: "¿Qué impacto tuvo la Revolución Francesa en los conceptos de ciudadanía?",
+                question: "¿Qué teorema es más adecuado para comparar $\\int f_n \\to \\int f$?",
                 options: [
-                    { text: "Estableció que la ciudadanía solo era hereditaria", isCorrect: false, explanation: "La Revolución abolió los privilegios de nacimiento y promovió la igualdad legal." },
-                    { text: "Redujo el concepto de ciudadanía a la élite religiosa", isCorrect: false, explanation: "La Revolución buscó una ciudadanía más inclusiva, aunque con limitaciones iniciales." },
-                    { text: "Introdujo la noción de ciudadanía basada en derechos y deberes", isCorrect: true, explanation: "La Declaración de los Derechos del Hombre y del Ciudadano definió la ciudadanía en términos de derechos naturales y la participación en la formación de la ley." },
-                    { text: "Mantuvo la exclusión política de todos los no nobles", isCorrect: false, explanation: "La Revolución eliminó la exclusión basada en la nobleza, aunque introdujo otras formas de exclusión (por ejemplo, basadas en la propiedad)." }
+                    { text: "Monótono", isCorrect: false, explanation: "El Teorema de Convergencia Monótona (MCT) es para sucesiones crecientes." },
+                    { text: "Dominado", isCorrect: true, explanation: "El Teorema de Convergencia Dominada (DCT) es el más general para intercambiar límite e integral." },
+                    { text: "Inverso", isCorrect: false, explanation: "No es un teorema estándar de convergencia de integrales." },
+                    { text: "Tychonoff", isCorrect: false, explanation: "El teorema de Tychonoff es sobre topología, no convergencia de integrales." }
                 ],
-                level: 5
-            },
-            {
-                question: "¿Qué interpretación permite entender el fin del Directorio y el inicio del Consulado?",
-                options: [
-                    { text: "Fue una maniobra democrática de la nobleza", isCorrect: false, explanation: "Fue un golpe de estado que puso fin al Directorio, no una maniobra democrática de la nobleza." },
-                    { text: "Reflejó la incapacidad del pueblo para autogobernarse", isCorrect: false, explanation: "Reflejó la inestabilidad política y la búsqueda de un gobierno fuerte tras años de conflicto." },
-                    { text: "Representó un giro autoritario con respaldo popular", isCorrect: true, explanation: "El golpe de estado de Napoleón, que estableció el Consulado, fue un giro hacia un gobierno más autoritario, pero inicialmente contó con cierto apoyo popular cansado de la inestabilidad." },
-                    { text: "Fue promovido por la Iglesia para controlar al Estado", isCorrect: false, explanation: "La Iglesia había perdido gran parte de su poder durante la Revolución y no promovió este cambio político." }
-                ],
-                level: 5
+                level: 6
             }
         ];
 
@@ -1367,7 +1473,7 @@
                     setTimeout(() => {
                         spawnBoss();
                         gamePaused = false; // Unpause for boss fight
-                        startGameLoop(); // Ensure game loop resumes
+                        startGameLoop();
                     }, 2000); // Small delay before boss spawns
                 } else if (currentWave < currentLevelConfig.numWaves) {
                     // Advance to next regular wave
@@ -1377,7 +1483,7 @@
                     setTimeout(() => {
                         spawnWave();
                         gamePaused = false; // Unpause after wave spawns
-                        startGameLoop(); // Ensure game loop resumes
+                        startGameLoop();
                     }, currentLevelConfig.waveDelay); // Small delay before next wave
                 } else {
                     // All waves completed for the current level, level up!
