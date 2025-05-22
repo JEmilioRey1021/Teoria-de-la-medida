@@ -562,14 +562,13 @@
                 baseObstaclesPerWave: Math.min(10, Math.floor(i * 0.3)),
                 waveDelay: 2000, // 2 seconds between waves
                 // Power-up drop chance increases, but not too high
-                // Aumentando la probabilidad de aparición de poderes
-                powerUpDropChance: Math.min(0.5, 0.05 + (i * 0.02)), // Aumentado de 0.01 + (i * 0.012)
+                powerUpDropChance: Math.min(0.5, 0.05 + (i * 0.02)),
                 // Rock spawn chance increases
                 rockSpawnChance: Math.min(0.5, 0.05 + (i * 0.02)),
                 // Indestructible rock chance increases
                 indestructibleRockChance: Math.min(0.8, 0.1 + (i * 0.03)),
-                // Enemy speed increases
-                enemySpeedMultiplier: 0.5 + (i * 0.15),
+                // Enemy speed increases, but starting slower and scaling less aggressively
+                enemySpeedMultiplier: 0.2 + (i * 0.05), // Adjusted from 0.5 + (i * 0.15)
                 // Guillotine cooldown reduction (faster shooting)
                 guillotineCooldownReduction: Math.max(50, 500 - (i * 15)), // Min cooldown 50ms
                 // Enemy size reduction for higher levels
@@ -595,10 +594,12 @@
         triangleImage.src = "soldado.png"; // Placeholder for triangle enemy
 
         const destructibleRockImage = new Image();
-        destructibleRockImage.src = "pergamino.png"; // Destructible rock placeholder
+        // Updated to use a placeholder image for pergamino
+        destructibleRockImage.src = "https://placehold.co/50x50/8B4513/FFFFFF?text=📜"; // Pergamino icon
 
         const indestructibleRockImage = new Image();
-        indestructibleRockImage.src = "bloque.png"; // Indestructible rock placeholder
+        // Updated to use a placeholder image for block
+        indestructibleRockImage.src = "https://placehold.co/50x50/607D8B/FFFFFF?text=🧱"; // Bloque icon
 
         // New image for the boss (giant Marie Antoinette)
         const bossMarieAntoinetteImage = new Image();
@@ -724,7 +725,7 @@
                 this.image = this.getImageByType(type);
                 // Base speed with random variation
                 this.speedX = (0.5 + enemySpeedMultiplier) * (0.75 + Math.random() * 0.5); // 75% to 125% of base speed
-                this.speedY = 0.1; // Constant downward drift
+                this.speedY = (0.05 + enemySpeedMultiplier * 0.02); // Adjusted base speed and scaling
                 this.directionX = Math.random() < 0.5 ? 1 : -1; // Initial horizontal direction
                 this.points = this.getPointsByType(type);
 
@@ -841,12 +842,8 @@
             takeHit() {
                 if (!this.isIndestructible) {
                     this.health--;
-                    // Visual feedback: briefly change color (or use image for hit state)
-                    // Para ahora, solo un destello de color rápido
-                    this.image.src = "https://placehold.co/50x50/e74c3c/ecf0f1?text=DMG"; // Flash rojo al ser golpeado (cambiado de 💥)
-                    setTimeout(() => {
-                        this.image.src = destructibleRockImage.src; // Volver a la imagen original
-                    }, 100);
+                    // Removed the temporary image change on hit, now it will just show the health number
+                    // You could add a subtle visual effect here if desired, without changing the image source
                 }
             }
         }
@@ -1797,10 +1794,10 @@
                 questionModal.style.display = 'flex';
                 // Render MathJax after content is added to the DOM
                 if (window.MathJax) {
-                    // Tell MathJax to typeset the question text and the newly created buttons within questionOptions
-                    // MathJax will process the spans inside the buttons.
-                    window.MathJax.typesetPromise([questionText, questionOptions]).then(() => {
-                        console.log('MathJax typeset complete');
+                    // Ensure MathJax processes the content after it's in the DOM and visible
+                    // This will re-typeset all math in the modal-content
+                    MathJax.typesetPromise([questionModal.querySelector('.modal-content')]).then(() => {
+                        console.log('MathJax typeset complete for modal content');
                     }).catch((err) => console.error('MathJax typesetting failed:', err));
                 }
             } else {
