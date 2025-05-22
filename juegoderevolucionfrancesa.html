@@ -580,7 +580,7 @@
         guillotineImage.src = "guillotina.png"; // Guillotine icon
 
         const marieAntoinetteImage = new Image();
-        marieAntoinetteImage.src = "mariaantonietta.png"; // Imagen local de Marie Antoinette
+        marieAntoinetteImage.src = "mariaantonietta.png"; // Marie Antoinette
 
         const louisXVIImage = new Image();
         louisXVIImage.src = "LuisXVI.png"; // Louis XVI
@@ -596,6 +596,10 @@
 
         const indestructibleRockImage = new Image();
         indestructibleRockImage.src = "https://placehold.co/50x50/606060/ecf0f1?text=🪨I"; // Indestructible rock placeholder
+
+        // New image for the boss (giant Marie Antoinette)
+        const bossMarieAntoinetteImage = new Image();
+        bossMarieAntoinetteImage.src = "MAboss.gif"; // A distinct, larger placeholder for the boss
 
         // Power-up images (placeholders)
         const tripleShotImage = new Image();
@@ -900,7 +904,7 @@
                 this.height = ENEMY_BASE_HEIGHT * BOSS_SIZE_MULTIPLIER;
                 this.x = (GAME_WIDTH - this.width) / 2;
                 this.y = 20; // Start near the top
-                this.image = marieAntoinetteImage; // Use Marie Antoinette image
+                this.image = bossMarieAntoinetteImage; // Use the distinct boss image
                 this.health = 10 * BOSS_HEALTH_MULTIPLIER; // Much higher health
                 this.maxHealth = this.health; // For health bar calculation
                 this.points = 5000; // High points for defeating boss
