@@ -594,16 +594,17 @@
         triangleImage.src = "soldado.png"; // Placeholder for triangle enemy
 
         const destructibleRockImage = new Image();
-        // Updated to use a placeholder image for pergamino
+        // Reverted to local file path as requested
         destructibleRockImage.src = "pergamino.png"; // Pergamino icon
 
         const indestructibleRockImage = new Image();
-        // Updated to use a placeholder image for block
+        // Reverted to local file path as requested
         indestructibleRockImage.src = "bloque.png"; // Bloque icon
 
         // New image for the boss (giant Marie Antoinette)
         const bossMarieAntoinetteImage = new Image();
-        bossMarieAntoinetteImage.src = "buzzAntonietta.png"; // A distinct, larger placeholder for the boss
+        // Reverted to local file path as requested
+        bossMarieAntoinetteImage.src = "buzzAntonietta.png"; 
 
         // Power-up images (placeholders)
         const tripleShotImage = new Image();
@@ -716,7 +717,7 @@
         }
 
         class Enemy {
-            constructor(x, y, type, currentEnemyWidth, currentEnemyHeight, enemySpeedMultiplier) {
+            constructor(x, y, type, currentEnemyWidth, currentEnemyHeight, enemySpeedMultiplier, guaranteedPowerUpDrop = false) {
                 this.x = x;
                 this.y = y;
                 this.width = currentEnemyWidth;
@@ -728,6 +729,7 @@
                 this.speedY = 0.1; // Constant downward drift
                 this.directionX = Math.random() < 0.5 ? 1 : -1; // Initial horizontal direction
                 this.points = this.getPointsByType(type);
+                this.guaranteedPowerUpDrop = guaranteedPowerUpDrop; // New property for guaranteed power-up drop
 
                 // Timer for random horizontal direction changes
                 this.randomDirectionChangeInterval = 1000 + Math.random() * 2000; // Change every 1 to 3 seconds
@@ -914,12 +916,34 @@
 
                 this.attackCooldown = BOSS_ATTACK_COOLDOWN; // Boss attacks every 1.5 seconds
                 this.lastAttackTime = performance.now();
+
+                // Propiedades para la animación de la hoja de sprites
+                // IMPORTANTE: Estos valores deben coincidir con las dimensiones reales de los fotogramas
+                // y el número de fotogramas en tu archivo MAboss.gif si lo usas como spritesheet.
+                this.frameX = 0; // Columna del fotograma actual en la hoja de sprites
+                this.frameY = 0; // Fila del fotograma actual en la hoja de sprites (si hay varias filas)
+                this.frameWidth = 60; // Ancho de un solo fotograma en la hoja de sprites (ej. 60x60 píxeles)
+                this.frameHeight = 60; // Alto de un solo fotograma en la hoja de sprites
+                this.maxFrames = 4; // Número total de fotogramas en la animación (ej. 4 fotogramas)
+                this.frameTimer = 0; // Temporizador para controlar la velocidad de los fotogramas
+                this.frameInterval = 150; // Milisegundos por fotograma (ej. 150ms por fotograma)
             }
 
             draw() {
-                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                // Dibuja el fotograma actual de la hoja de sprites
+                ctx.drawImage(
+                    this.image,
+                    this.frameX * this.frameWidth, // Origen X (columna del fotograma actual)
+                    this.frameY * this.frameHeight, // Origen Y (fila del fotograma actual)
+                    this.frameWidth,                 // Ancho de origen (ancho de un fotograma)
+                    this.frameHeight,                // Alto de origen (alto de un fotograma)
+                    this.x,                          // Destino X (dónde dibujar en el canvas)
+                    this.y,                          // Destino Y
+                    this.width,                      // Ancho de destino (tamaño escalado del jefe)
+                    this.height                      // Alto de destino
+                );
 
-                // Draw health bar for the boss
+                // Dibuja la barra de vida para el jefe
                 const healthBarWidth = this.width * (this.health / this.maxHealth);
                 ctx.fillStyle = '#e74c3c'; // Red health bar
                 ctx.fillRect(this.x, this.y - 15, healthBarWidth, 10);
@@ -933,29 +957,39 @@
                     this.x += this.speedX * this.directionX;
                     this.y += this.speedY;
 
-                    // Bounce off walls
+                    // Actualiza el fotograma para la animación
+                    this.frameTimer += 1000 / 60; // Asumiendo 60 FPS para el bucle del juego
+                    if (this.frameTimer > this.frameInterval) {
+                        this.frameX++;
+                        if (this.frameX >= this.maxFrames) {
+                            this.frameX = 0; // Vuelve al primer fotograma
+                        }
+                        this.frameTimer -= this.frameInterval; // Reinicia el temporizador
+                    }
+
+                    // Rebota en las paredes
                     if (this.x + this.width > GAME_WIDTH || this.x < 0) {
                         this.directionX *= -1;
                     }
 
-                    // Boss attacks
+                    // El jefe ataca
                     const now = performance.now();
                     if (now - this.lastAttackTime > this.attackCooldown) {
                         this.shootAttack();
                         this.lastAttackTime = now;
                     }
 
-                    // Game over if boss reaches guillotine
+                    // Game over si el jefe llega a la guillotina
                     if (this.y + this.height > guillotine.y) {
                         endGame();
-                        return; // Stop game loop immediately
+                        return; // Detiene el bucle del juego inmediatamente
                     }
                 }
             }
 
             shootAttack() {
-                // Boss can shoot multiple projectiles or a spread
-                // Example: 3 projectiles in a small arc
+                // El jefe puede disparar múltiples proyectiles o una ráfaga
+                // Ejemplo: 3 proyectiles en un pequeño arco
                 bossProjectiles.push(new BossProjectile(this.x + this.width / 2, this.y + this.height, -0.5));
                 bossProjectiles.push(new BossProjectile(this.x + this.width / 2, this.y + this.height, 0));
                 bossProjectiles.push(new BossProjectile(this.x + this.width / 2, this.y + this.height, 0.5));
@@ -1437,6 +1471,17 @@
             drones = []; // Clear any drones
             bossProjectiles = []; // Clear any existing boss projectiles
 
+            const currentLevelConfig = levelConfigs[level - 1];
+            const enemySpeedMultiplier = currentLevelConfig ? currentLevelConfig.enemySpeedMultiplier : 0.5;
+            const enemyWidth = ENEMY_BASE_WIDTH * (currentLevelConfig ? currentLevelConfig.enemySizeMultiplier : 1);
+            const enemyHeight = ENEMY_BASE_HEIGHT * (currentLevelConfig ? currentLevelConfig.enemySizeMultiplier : 1);
+
+            // Spawn 3 additional normal enemies that are guaranteed to drop power-ups
+            // Positions are chosen to be accessible but not directly on top of the boss
+            enemies.push(new Enemy(GAME_WIDTH * 0.1, ENEMY_START_Y + 20, 'crown', enemyWidth, enemyHeight, enemySpeedMultiplier, true));
+            enemies.push(new Enemy(GAME_WIDTH * 0.4, ENEMY_START_Y + 20, 'louis', enemyWidth, enemyHeight, enemySpeedMultiplier, true));
+            enemies.push(new Enemy(GAME_WIDTH * 0.7, ENEMY_START_Y + 20, 'marie', enemyWidth, enemyHeight, enemySpeedMultiplier, true));
+
             // Update display to reflect boss fight
             enemiesRemainingDisplay.textContent = "¡JEFE!";
             activePowerUpDisplay.textContent = "¡Cuidado!";
@@ -1473,7 +1518,7 @@
                     setTimeout(() => {
                         spawnBoss();
                         gamePaused = false; // Unpause for boss fight
-                        startGameLoop(); // Ensure game loop resumes
+                        startGameLoop();
                     }, 2000); // Small delay before boss spawns
                 } else if (currentWave < currentLevelConfig.numWaves) {
                     // Advance to next regular wave
@@ -1483,7 +1528,7 @@
                     setTimeout(() => {
                         spawnWave();
                         gamePaused = false; // Unpause after wave spawns
-                        startGameLoop(); // Ensure game loop resumes
+                        startGameLoop();
                     }, currentLevelConfig.waveDelay); // Small delay before next wave
                 } else {
                     // All waves completed for the current level, level up!
@@ -1591,13 +1636,19 @@
                             enemiesDefeatedThisLevel++;
                             enemiesToRemove.add(j);
 
-                            // Chance to drop a power-up when an enemy is destroyed
-                            const currentLevelConfig = levelConfigs[level - 1];
-                            const powerUpDropChance = currentLevelConfig ? currentLevelConfig.powerUpDropChance : 0.01; // Default low chance
-                            if (Math.random() < powerUpDropChance) {
+                            // Power-up drop logic: Check if guaranteed drop or random chance
+                            if (enemy.guaranteedPowerUpDrop) {
                                 const powerUpTypesArray = Object.keys(POWER_UP_TYPES);
                                 const randomPowerUpType = powerUpTypesArray[Math.floor(Math.random() * powerUpTypesArray.length)];
                                 powerUps.push(new PowerUp(enemy.x + enemy.width / 2 - POWER_UP_WIDTH / 2, enemy.y + enemy.height / 2 - POWER_UP_HEIGHT / 2, randomPowerUpType));
+                            } else {
+                                const currentLevelConfig = levelConfigs[level - 1];
+                                const powerUpDropChance = currentLevelConfig ? currentLevelConfig.powerUpDropChance : 0.01; // Default low chance
+                                if (Math.random() < powerUpDropChance) {
+                                    const powerUpTypesArray = Object.keys(POWER_UP_TYPES);
+                                    const randomPowerUpType = powerUpTypesArray[Math.floor(Math.random() * powerUpTypesArray.length)];
+                                    powerUps.push(new PowerUp(enemy.x + enemy.width / 2 - POWER_UP_WIDTH / 2, enemy.y + enemy.height / 2 - POWER_UP_HEIGHT / 2, randomPowerUpType));
+                                }
                             }
 
                             if (!projectile.isPiercing) { // Only destroy projectile if not piercing
