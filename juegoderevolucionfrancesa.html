@@ -458,6 +458,12 @@
     </div>
 
     <audio id="backgroundMusic" loop preload="auto">
+        <!-- 
+            Nota sobre la reproducción de música:
+            Los navegadores modernos a menudo bloquean la reproducción automática de medios con sonido
+            hasta que el usuario interactúa con la página. Si la música no se reproduce automáticamente
+            al iniciar el juego, por favor, haz clic en el botón "Música: ON/OFF" para activarla.
+        -->
         <source src="https://drive.google.com/uc?export=download&id=1AieS3xLLPnEvmL1qGt91PP9tdDJFP4vs" type="audio/mpeg">
         Tu navegador no soporta el elemento de audio.
     </audio>
@@ -586,45 +592,45 @@
 
         // Game Images (using placeholders for now)
         const guillotineImage = new Image();
-        guillotineImage.src = "guillotina.png"; // Guillotine icon
+        guillotineImage.src = "image_f6ed40.png"; // Guillotine icon
 
         const marieAntoinetteImage = new Image();
-        marieAntoinetteImage.src = "mariaantonietta.png"; // Marie Antoinette
+        marieAntoinetteImage.src = "image_f6f89e.png"; // Marie Antoinette
 
         const louisXVIImage = new Image();
-        louisXVIImage.src = "LuisXVI.png"; // Luis XVI
+        louisXVIImage.src = "image_f9abb6.png"; // Luis XVI
 
         const crownImage = new Image();
-        crownImage.src = "corona.png"; // Corona
+        crownImage.src = "image_f9b33b.png"; // Corona
 
         const triangleImage = new Image(); // New image for triangle enemy
-        triangleImage.src = "soldado.png"; // Soldado (triangle enemy)
+        triangleImage.src = "image_f94299.png"; // Soldado (triangle enemy)
 
         const destructibleRockImage = new Image();
-        destructibleRockImage.src = "pergamino.png"; // Pergamino (destructible rock)
+        destructibleRockImage.src = "image_f9b29f.png"; // Pergamino (destructible rock)
 
         const indestructibleRockImage = new Image();
-        indestructibleRockImage.src = "bloque.png"; // Bloque (indestructible rock)
+        indestructibleRockImage.src = "image_f9b2db.png"; // Bloque (indestructible rock)
 
         // New image for the boss (giant Marie Antoinette)
         const bossMarieAntoinetteImage = new Image();
-        bossMarieAntoinetteImage.src = "buzzAntonietta.png"; // Buzz Antonietta (boss)
+        bossMarieAntoinetteImage.src = "image_03a344.png"; // Buzz Antonietta (boss)
 
         // Power-up images (placeholders)
         const tripleShotImage = new Image();
-        tripleShotImage.src = "tripleshot.png"; // Triple Shot
+        tripleShotImage.src = "image_23e9df.png"; // Triple Shot
 
         const rapidFireImage = new Image();
-        rapidFireImage.src = "rapidfire.png"; // Rapid Fire
+        rapidFireImage.src = "image_312bc5.png"; // Rapid Fire
 
         const piercingBulletImage = new Image();
-        piercingBulletImage.src = "piercingbullet.png"; // Piercing Bullet
+        piercingBulletImage.src = "image_3189b8.png"; // Piercing Bullet
 
         const enemyFreezeImage = new Image();
-        enemyFreezeImage.src = "congelado.png"; // Enemy Freeze
+        enemyFreezeImage.src = "image_3198dd.png"; // Enemy Freeze
 
         const droneCompanionImage = new Image();
-        droneCompanionImage.src = "dron.png"; // Drone Companion
+        droneCompanionImage.src = "image_321820.png"; // Drone Companion
 
 
         // Power-up types and their properties
@@ -789,7 +795,7 @@
                     // Reverse direction if hitting horizontal boundaries
                     if (this.x + this.width > GAME_WIDTH || this.x < 0) {
                         this.directionX *= -1; // Reverse horizontal direction
-                        this.y += this.height / 2; // Drop down when hitting wall (use enemy's height)
+                        // REMOVED: this.y += this.height / 2; // This caused rapid drops
                     }
 
                     // Game over if enemy reaches bottom
@@ -1405,6 +1411,8 @@
 
             // Attempt to play music on game start
             try {
+                // The browser might block autoplay without user interaction.
+                // If it doesn't play automatically, click the "Música: ON" button.
                 await backgroundMusic.play();
                 musicToggleBtn.textContent = 'Música: ON';
             } catch (error) {
