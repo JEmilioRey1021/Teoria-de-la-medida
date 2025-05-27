@@ -458,7 +458,7 @@
     </div>
 
     <audio id="backgroundMusic" loop preload="auto">
-        <source src="https://drive.google.com/uc?export=download&id=1AieS3xLLPnEvmL1qGt91PP9tdDJFP4vs" type="audio/mpeg">
+        <source src="URL_A_TU_ARCHIVO_MP3.mp3" type="audio/mpeg">
         Tu navegador no soporta el elemento de audio.
     </audio>
 
@@ -592,39 +592,40 @@
         marieAntoinetteImage.src = "mariaantonietta.png"; // Marie Antoinette
 
         const louisXVIImage = new Image();
-        louisXVIImage.src = "LuisXVI.png"; // Louis XVI
+        louisXVIImage.src = "LuisXVI.png"; // Luis XVI
 
         const crownImage = new Image();
-        crownImage.src = "corona.png"; // Crown
+        crownImage.src = "corona.png"; // Corona
 
         const triangleImage = new Image(); // New image for triangle enemy
-        triangleImage.src = "soldado.png"; // Placeholder for triangle enemy
+        triangleImage.src = "soldado.png"; // Soldado (triangle enemy)
 
         const destructibleRockImage = new Image();
-        destructibleRockImage.src = "pergamino.png"; // Pergamino icon
+        destructibleRockImage.src = "pergamino.png"; // Pergamino (destructible rock)
 
         const indestructibleRockImage = new Image();
-        indestructibleRockImage.src = "bloque.png"; // Bloque icon
+        indestructibleRockImage.src = "bloque.png"; // Bloque (indestructible rock)
 
         // New image for the boss (giant Marie Antoinette)
         const bossMarieAntoinetteImage = new Image();
-        bossMarieAntoinetteImage.src = "buzzAntonietta.png"; 
+        bossMarieAntoinetteImage.src = "buzzAntonietta.png"; // Buzz Antonietta (boss)
 
         // Power-up images (placeholders)
         const tripleShotImage = new Image();
-        tripleShotImage.src = "tripleshot.png"; // Purple for triple shot
+        tripleShotImage.src = "tripleshot.png"; // Triple Shot
 
         const rapidFireImage = new Image();
-        rapidFireImage.src = "rapidfire.png"; // Green for rapid fire
+        rapidFireImage.src = "rapidfire.png"; // Rapid Fire
 
         const piercingBulletImage = new Image();
-        piercingBulletImage.src = "piercingbullet.png"; // Blue for piercing bullet
+        piercingBulletImage.src = "piercingbullet.png"; // Piercing Bullet
 
         const enemyFreezeImage = new Image();
-        enemyFreezeImage.src = "congelado.png"; // Light blue for enemy freeze
+        enemyFreezeImage.src = "congelado.png"; // Enemy Freeze
 
         const droneCompanionImage = new Image();
-        droneCompanionImage.src = "dron.png"; // Yellow for drone companion
+        droneCompanionImage.src = "dron.png"; // Drone Companion
+
 
         // Power-up types and their properties
         const POWER_UP_TYPES = {
@@ -1128,7 +1129,7 @@
                     { text: "A) Converge en media", isCorrect: false, explanation: "La convergencia casi segura no implica necesariamente convergencia en media sin condiciones adicionales (como dominación)." },
                     { text: "B) Converge punto a punto fuera de un conjunto de probabilidad cero", isCorrect: true, explanation: "Esta es la definición de convergencia casi segura." },
                     { text: "C) Converge uniformemente", isCorrect: false, explanation: "La convergencia casi segura es más débil que la uniforme." },
-                    { text: "D) Tiene misma varianza", isCorrect: false, explanation: "La convergencia no implica igualdad de varianzas." }
+                    { text: "D) Converge débil", isCorrect: false, explanation: "La convergencia casi segura implica convergencia en probabilidad, que es más fuerte que la convergencia débil." }
                 ],
                 level: 7
             },
