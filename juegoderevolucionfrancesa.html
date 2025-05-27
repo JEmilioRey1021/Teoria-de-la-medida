@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -483,7 +483,7 @@
         const leftBtn = document.getElementById('leftBtn');
         const rightBtn = document.getElementById('rightBtn');
         const shootBtn = document.getElementById('shootBtn');
-        const activePowerUpDisplay = document.getElementById('activePowerUpDisplay');
+        const activePowerUpDisplay = document.getElementById('activePowerUpDisplay'); // Corrected line
         const musicToggleBtn = document.getElementById('musicToggleBtn'); // Music toggle button
         const backgroundMusic = document.getElementById('backgroundMusic'); // Audio element
 
@@ -592,45 +592,45 @@
 
         // Game Images (using placeholders for now)
         const guillotineImage = new Image();
-        guillotineImage.src = "guillotina.png"; // Guillotine icon
+        guillotineImage.src = "https://placehold.co/60x60/34495e/ecf0f1?text=🔪"; // Guillotine icon
 
         const marieAntoinetteImage = new Image();
-        marieAntoinetteImage.src = "mariaantonietta.png"; // Marie Antoinette
+        marieAntoinetteImage.src = "https://placehold.co/50x50/e74c3c/ecf0f1?text=👸"; // Marie Antoinette
 
         const louisXVIImage = new Image();
-        louisXVIImage.src = "LuisXVI.png"; // Luis XVI
+        louisXVIImage.src = "https://placehold.co/50x50/9b59b6/ecf0f1?text=👑"; // Luis XVI
 
         const crownImage = new Image();
-        crownImage.src = "corona.png"; // Corona
+        crownImage.src = "https://placehold.co/50x50/f1c40f/34495e?text=⚜️"; // Corona
 
         const triangleImage = new Image(); // New image for triangle enemy
-        triangleImage.src = "soldado.png"; // Soldado (triangle enemy)
+        triangleImage.src = "https://placehold.co/50x50/3498db/ecf0f1?text=🔺"; // Soldado (triangle enemy)
 
         const destructibleRockImage = new Image();
-        destructibleRockImage.src = "pergamino.png"; // Pergamino (destructible rock)
+        destructibleRockImage.src = "https://placehold.co/50x50/a0a0a0/ecf0f1?text=📜"; // Pergamino (destructible rock)
 
         const indestructibleRockImage = new Image();
-        indestructibleRockImage.src = "bloque.png"; // Bloque (indestructible rock)
+        indestructibleRockImage.src = "https://placehold.co/50x50/606060/ecf0f1?text=🧱"; // Bloque (indestructible rock)
 
         // New image for the boss (giant Marie Antoinette)
         const bossMarieAntoinetteImage = new Image();
-        bossMarieAntoinetteImage.src = "buzzAntonietta.png"; // Buzz Antonietta (boss)
+        bossMarieAntoinetteImage.src = "https://placehold.co/125x125/e74c3c/ecf0f1?text=👑👸"; // Buzz Antonietta (boss)
 
         // Power-up images (placeholders)
         const tripleShotImage = new Image();
-        tripleShotImage.src = "tripleshot.png"; // Triple Shot
+        tripleShotImage.src = "https://placehold.co/40x40/2ecc71/ecf0f1?text=x3"; // Triple Shot
 
         const rapidFireImage = new Image();
-        rapidFireImage.src = "rapidfire.png"; // Rapid Fire
+        rapidFireImage.src = "https://placehold.co/40x40/3498db/ecf0f1?text=⚡"; // Rapid Fire
 
         const piercingBulletImage = new Image();
-        piercingBulletImage.src = "piercingbullet.png"; // Piercing Bullet
+        piercingBulletImage.src = "https://placehold.co/40x40/9b59b6/ecf0f1?text= xuyên"; // Piercing Bullet
 
         const enemyFreezeImage = new Image();
-        enemyFreezeImage.src = "congelado.png"; // Enemy Freeze
+        enemyFreezeImage.src = "https://placehold.co/40x40/1abc9c/ecf0f1?text=❄️"; // Enemy Freeze
 
         const droneCompanionImage = new Image();
-        droneCompanionImage.src = "dron.png"; // Drone Companion
+        droneCompanionImage.src = "https://placehold.co/40x40/f39c12/ecf0f1?text=🤖"; // Drone Companion
 
 
         // Power-up types and their properties
@@ -1442,9 +1442,29 @@
             // Spawn a Destructible Rock with Triple Shot power-up
             obstacles.push(new Obstacle(GAME_WIDTH * 0.7, ENEMY_START_Y + 50, 'destructible_rock', enemyWidth, enemyHeight, enemySpeedMultiplier, true, 'triple_shot'));
 
-            // You can still add other regular enemies if you want more challenge during the boss phase
-            enemies.push(new Enemy(GAME_WIDTH * 0.1, ENEMY_START_Y + 20, 'crown', enemyWidth, enemyHeight, enemySpeedMultiplier, true));
-            enemies.push(new Enemy(GAME_WIDTH * 0.4, ENEMY_START_Y + 20, 'marie', enemyWidth, enemyHeight, enemySpeedMultiplier, true));
+            // Añadir un enemigo Luis XVI que suelte un poder "Piercing Bullet"
+            enemies.push(new Enemy(
+                GAME_WIDTH * 0.35, // Posición X
+                ENEMY_START_Y + 100, // Posición Y
+                'louis',
+                enemyWidth,
+                enemyHeight,
+                enemySpeedMultiplier,
+                true, // Garantizar que suelte un poder
+                'piercing_bullet' // Poder específico
+            ));
+
+            // Añadir un obstáculo de pergamino destructible que suelte un poder "Enemy Freeze"
+            obstacles.push(new Obstacle(
+                GAME_WIDTH * 0.65, // Posición X
+                ENEMY_START_Y + 100, // Posición Y
+                'destructible_rock',
+                enemyWidth,
+                enemyHeight,
+                enemySpeedMultiplier,
+                true, // Garantizar que suelte un poder
+                'enemy_freeze' // Poder específico
+            ));
 
 
             // Update display to reflect boss fight
