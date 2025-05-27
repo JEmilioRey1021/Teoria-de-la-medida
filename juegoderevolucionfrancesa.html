@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -592,45 +592,45 @@
 
         // Game Images (using placeholders for now)
         const guillotineImage = new Image();
-        guillotineImage.src = "guillotina.png"; // Guillotine icon
+        guillotineImage.src = "image_f6ed40.png"; // Guillotine icon
 
         const marieAntoinetteImage = new Image();
-        marieAntoinetteImage.src = "mariaantonietta.png"; // Marie Antoinette
+        marieAntoinetteImage.src = "image_f6f89e.png"; // Marie Antoinette
 
         const louisXVIImage = new Image();
-        louisXVIImage.src = "LuisXVI.png"; // Luis XVI
+        louisXVIImage.src = "image_f9abb6.png"; // Luis XVI
 
         const crownImage = new Image();
-        crownImage.src = "corona.png"; // Corona
+        crownImage.src = "image_f9b33b.png"; // Corona
 
         const triangleImage = new Image(); // New image for triangle enemy
-        triangleImage.src = "soldado.png"; // Soldado (triangle enemy)
+        triangleImage.src = "image_f94299.png"; // Soldado (triangle enemy)
 
         const destructibleRockImage = new Image();
-        destructibleRockImage.src = "pergamino.png"; // Pergamino (destructible rock)
+        destructibleRockImage.src = "image_f9b29f.png"; // Pergamino (destructible rock)
 
         const indestructibleRockImage = new Image();
-        indestructibleRockImage.src = "bloque.png"; // Bloque (indestructible rock)
+        indestructibleRockImage.src = "image_f9b2db.png"; // Bloque (indestructible rock)
 
         // New image for the boss (giant Marie Antoinette)
         const bossMarieAntoinetteImage = new Image();
-        bossMarieAntoinetteImage.src = "buzzAntonietta.png"; // Buzz Antonietta (boss)
+        bossMarieAntoinetteImage.src = "image_03a344.png"; // Buzz Antonietta (boss)
 
         // Power-up images (placeholders)
         const tripleShotImage = new Image();
-        tripleShotImage.src = "tripleshot.png"; // Triple Shot
+        tripleShotImage.src = "image_23e9df.png"; // Triple Shot
 
         const rapidFireImage = new Image();
-        rapidFireImage.src = "rapidfire.png"; // Rapid Fire
+        rapidFireImage.src = "image_312bc5.png"; // Rapid Fire
 
         const piercingBulletImage = new Image();
-        piercingBulletImage.src = "piercingbullet.png"; // Piercing Bullet
+        piercingBulletImage.src = "image_3189b8.png"; // Piercing Bullet
 
         const enemyFreezeImage = new Image();
-        enemyFreezeImage.src = "congelado.png"; // Enemy Freeze
+        enemyFreezeImage.src = "image_3198dd.png"; // Enemy Freeze
 
         const droneCompanionImage = new Image();
-        droneCompanionImage.src = "dron.png"; // Drone Companion
+        droneCompanionImage.src = "image_321820.png"; // Drone Companion
 
 
         // Power-up types and their properties
@@ -1381,7 +1381,7 @@
             const numEntitiesForWave = currentLevelConfig.baseEnemiesPerWave + currentLevelConfig.baseObstaclesPerWave;
             // A simple way to arrange them: calculate rows/cols to fit N entities
             const estimatedCols = Math.min(10, Math.ceil(Math.sqrt(numEntitiesForWave * 1.5))); // Try to make it somewhat square-ish
-            const estimatedRows = Math.ceil(numEntitiesForWave / estimatedCols);
+            const estimatedRows = Math.ceil(numEntitiesForWave / estimatedCols); // Corrected from numEntitiesToSpawn to numEntitiesForWave
 
             const dynamicEntitySpacingX = Math.max(currentEnemyWidth + 10, INITIAL_ENEMY_SPACING_X - (level - 1) * 3);
             const dynamicEntitySpacingY = Math.max(currentEnemyHeight + 10, INITIAL_ENEMY_SPACING_Y - (level - 1) * 3);
@@ -1442,9 +1442,30 @@
             // Spawn a Destructible Rock with Triple Shot power-up
             obstacles.push(new Obstacle(GAME_WIDTH * 0.7, ENEMY_START_Y + 50, 'destructible_rock', enemyWidth, enemyHeight, enemySpeedMultiplier, true, 'triple_shot'));
 
-            // You can still add other regular enemies if you want more challenge during the boss phase
-            enemies.push(new Enemy(GAME_WIDTH * 0.1, ENEMY_START_Y + 20, 'crown', enemyWidth, enemyHeight, enemySpeedMultiplier, true));
-            enemies.push(new Enemy(GAME_WIDTH * 0.4, ENEMY_START_Y + 20, 'marie', enemyWidth, enemyHeight, enemySpeedMultiplier, true));
+
+            // Añadir un enemigo Luis XVI que suelte un poder "Piercing Bullet"
+            enemies.push(new Enemy(
+                GAME_WIDTH * 0.35, // Posición X
+                ENEMY_START_Y + 100, // Posición Y
+                'louis',
+                enemyWidth,
+                enemyHeight,
+                enemySpeedMultiplier,
+                true, // Garantizar que suelte un poder
+                'piercing_bullet' // Poder específico
+            ));
+
+            // Añadir un obstáculo de pergamino destructible que suelte un poder "Enemy Freeze"
+            obstacles.push(new Obstacle(
+                GAME_WIDTH * 0.65, // Posición X
+                ENEMY_START_Y + 100, // Posición Y
+                'destructible_rock',
+                enemyWidth,
+                enemyHeight,
+                enemySpeedMultiplier,
+                true, // Garantizar que suelte un poder
+                'enemy_freeze' // Poder específico
+            ));
 
 
             // Update display to reflect boss fight
