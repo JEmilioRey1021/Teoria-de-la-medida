@@ -590,7 +590,7 @@
         }
 
 
-        // Game Images (using placeholders for now)
+         // Game Images (using placeholders for now)
         const guillotineImage = new Image();
         guillotineImage.src = "guillotina.png"; // Guillotine icon
 
@@ -931,33 +931,21 @@
                 this.attackCooldown = BOSS_ATTACK_COOLDOWN; // Boss attacks every 1.5 seconds
                 this.lastAttackTime = performance.now();
 
-                // Propiedades para la animación de la hoja de sprites
-                // IMPORTANTE: Estos valores deben coincidir con las dimensiones reales de los fotogramas
-                // y el número de fotogramas en tu archivo MAboss.gif si lo usas como spritesheet.
-                this.frameX = 0; // Columna del fotograma actual en la hoja de sprites
-                this.frameY = 0; // Fila del fotograma actual en la hoja de sprites (si hay varias filas)
-                this.frameWidth = 60; // Ancho de un solo fotograma en la hoja de sprites (ej. 60x60 píxeles)
-                this.frameHeight = 60; // Alto de un solo fotograma en la hoja de sprites
-                this.maxFrames = 4; // Número total de fotogramas en la animación (ej. 4 fotogramas)
-                this.frameTimer = 0; // Temporizador para controlar la velocidad de los fotogramas
-                this.frameInterval = 150; // Milisegundos por fotograma (ej. 150ms por fotograma)
+                // REMOVED: Sprite animation properties as the image is a single frame
+                // this.frameX = 0;
+                // this.frameY = 0;
+                // this.frameWidth = 60;
+                // this.frameHeight = 60;
+                // this.maxFrames = 4;
+                // this.frameTimer = 0;
+                // this.frameInterval = 150;
             }
 
             draw() {
-                // Dibuja el fotograma actual de la hoja de sprites
-                ctx.drawImage(
-                    this.image,
-                    this.frameX * this.frameWidth, // Origen X (columna del fotograma actual)
-                    this.frameY * this.frameHeight, // Origen Y (fila del fotograma actual)
-                    this.frameWidth,                 // Ancho de origen (ancho de un fotograma)
-                    this.frameHeight,                // Alto de origen (alto de un fotograma)
-                    this.x,                          // Destino X (dónde dibujar en el canvas)
-                    this.y,                          // Destino Y
-                    this.width,                      // Ancho de destino (tamaño escalado del jefe)
-                    this.height                      // Alto de destino
-                );
+                // Draw the entire boss image (no sprite sheet logic needed)
+                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 
-                // Dibuja la barra de vida para el jefe
+                // Draw the health bar for the boss
                 const healthBarWidth = this.width * (this.health / this.maxHealth);
                 ctx.fillStyle = '#e74c3c'; // Red health bar
                 ctx.fillRect(this.x, this.y - 15, healthBarWidth, 10);
@@ -971,39 +959,39 @@
                     this.x += this.speedX * this.directionX;
                     this.y += this.speedY;
 
-                    // Actualiza el fotograma para la animación
-                    this.frameTimer += 1000 / 60; // Asumiendo 60 FPS para el bucle del juego
-                    if (this.frameTimer > this.frameInterval) {
-                        this.frameX++;
-                        if (this.frameX >= this.maxFrames) {
-                            this.frameX = 0; // Vuelve al primer fotograma
-                        }
-                        this.frameTimer -= this.frameInterval; // Reinicia el temporizador
-                    }
+                    // REMOVED: Sprite animation update logic
+                    // this.frameTimer += 1000 / 60;
+                    // if (this.frameTimer > this.frameInterval) {
+                    //     this.frameX++;
+                    //     if (this.frameX >= this.maxFrames) {
+                    //         this.frameX = 0;
+                    //     }
+                    //     this.frameTimer -= this.frameInterval;
+                    // }
 
-                    // Rebota en las paredes
+                    // Bounce off walls
                     if (this.x + this.width > GAME_WIDTH || this.x < 0) {
                         this.directionX *= -1;
                     }
 
-                    // El jefe ataca
+                    // Boss attacks
                     const now = performance.now();
                     if (now - this.lastAttackTime > this.attackCooldown) {
                         this.shootAttack();
                         this.lastAttackTime = now;
                     }
 
-                    // Game over si el jefe llega a la guillotina
+                    // Game over if boss reaches guillotine
                     if (this.y + this.height > guillotine.y) {
                         endGame();
-                        return; // Detiene el bucle del juego inmediatamente
+                        return; // Stop game loop immediately
                     }
                 }
             }
 
             shootAttack() {
-                // El jefe puede disparar múltiples proyectiles o una ráfaga
-                // Ejemplo: 3 proyectiles en un pequeño arco
+                // Boss can fire multiple projectiles or a burst
+                // Example: 3 projectiles in a small arc
                 bossProjectiles.push(new BossProjectile(this.x + this.width / 2, this.y + this.height, -0.5));
                 bossProjectiles.push(new BossProjectile(this.x + this.width / 2, this.y + this.height, 0));
                 bossProjectiles.push(new BossProjectile(this.x + this.width / 2, this.y + this.height, 0.5));
@@ -1156,7 +1144,7 @@
                     { text: "A) Uno", isCorrect: false, explanation: "Un conjunto nulo tiene probabilidad cero." },
                     { text: "B) Cero", isCorrect: true, explanation: "Por definición, un conjunto nulo tiene medida (probabilidad) cero." },
                     { text: "C) Menor que uno", isCorrect: false, explanation: "Es exactamente cero." },
-                    { text: "D) Infinito", isCorrect: false, explanation: "La probabilidad es siempre finita (entre 0 y 1)." }
+                    { text: "D) Infinita", isCorrect: false, explanation: "La probabilidad es siempre finita (entre 0 y 1)." }
                 ],
                 level: 7
             },
@@ -1289,57 +1277,6 @@
                     { text: "B) Cero", isCorrect: true, explanation: "Por definición, un conjunto de medida cero tiene probabilidad cero." },
                     { text: "C) Mayor que uno", isCorrect: false, explanation: "La probabilidad no puede ser mayor que uno." },
                     { text: "D) Infinita", isCorrect: false, explanation: "La probabilidad es finita." }
-                ],
-                level: 7
-            },
-            // Teoremas y resultados relacionados
-            {
-                question: "El teorema de Borel-Cantelli dice que si la suma de las probabilidades de An es finita, entonces:",
-                options: [
-                    { text: "A) La probabilidad de que ocurran infinitamente muchas de las An es cero", isCorrect: true, explanation: "Esta es la primera parte del Teorema de Borel-Cantelli." },
-                    { text: "B) Todas las An ocurren", isCorrect: false, explanation: "Es lo contrario." },
-                    { text: "C) Las An son independientes", isCorrect: false, explanation: "No se requiere independencia para la primera parte." },
-                    { text: "D) La suma de An es infinita", isCorrect: false, explanation: "La suma de las probabilidades es finita por hipótesis." }
-                ],
-                level: 7
-            },
-            {
-                question: "Si una función de densidad es positiva en todo su dominio, ¿cuál afirmación es verdadera?",
-                options: [
-                    { text: "A) Todo subconjunto no vacío tiene probabilidad positiva", isCorrect: true, explanation: "Si la densidad es estrictamente positiva, cualquier conjunto con medida de Lebesgue positiva tendrá probabilidad positiva." },
-                    { text: "B) Existen eventos de probabilidad cero en su dominio", isCorrect: false, explanation: "Solo si son conjuntos de medida cero." },
-                    { text: "C) Es constante", isCorrect: false, explanation: "No necesariamente." },
-                    { text: "D) No es normalizable", isCorrect: false, explanation: "Debe ser normalizable para ser una densidad." }
-                ],
-                level: 7
-            },
-            {
-                question: "En teoría de probabilidad, una función que difiere de otra solo en un conjunto nulo:",
-                options: [
-                    { text: "A) Se considera igual para propósitos de integración", isCorrect: true, explanation: "Las integrales de Lebesgue no distinguen funciones que difieren en conjuntos de medida cero." },
-                    { text: "B) No puede usarse", isCorrect: false, explanation: "Sí puede usarse." },
-                    { text: "C) Tiene diferente esperanza", isCorrect: false, explanation: "Tienen la misma esperanza." },
-                    { text: "D) Es discontinua", isCorrect: false, explanation: "No hay relación con la continuidad." }
-                ],
-                level: 7
-            },
-            {
-                question: "En un espacio de probabilidad continuo, ¿qué significa que un resultado tenga probabilidad uno?",
-                options: [
-                    { text: "A) Que ocurre casi seguramente", isCorrect: true, explanation: "Probabilidad uno es equivalente a casi seguramente en espacios de probabilidad." },
-                    { text: "B) Que ocurre siempre", isCorrect: false, explanation: "No necesariamente 'siempre', ya que puede haber excepciones de medida cero." },
-                    { text: "C) Que ocurre con certeza matemática", isCorrect: false, explanation: "La certeza matemática es más estricta que la probabilidad uno." },
-                    { text: "D) Que ocurre en la mitad del espacio", isCorrect: false, explanation: "No hay relación con la mitad del espacio." }
-                ],
-                level: 7
-            },
-            {
-                question: "En teoría de la medida aplicada a probabilidad, los conjuntos nulos:",
-                options: [
-                    { text: "A) Son ignorables para expectativas, varianzas y convergencias", isCorrect: true, explanation: "Los conjuntos nulos no afectan las propiedades estadísticas de las variables aleatorias." },
-                    { text: "B) Son los únicos eventos interesantes", isCorrect: false, explanation: "Son lo contrario." },
-                    { text: "C) No pueden existir", isCorrect: false, explanation: "Existen y son fundamentales." },
-                    { text: "D) Son los que ocurren con certeza", isCorrect: false, explanation: "Ocurren con probabilidad cero." }
                 ],
                 level: 7
             }
